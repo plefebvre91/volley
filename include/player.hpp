@@ -21,45 +21,35 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE. */
 
 
-#ifndef VOLLEY_HPP
-#define VOLLEY_HPP
+#ifndef PLAYER_HPP
+#define PLAYER_HPP
 
 #include <SFML/Graphics.hpp>
-#include "player.hpp"
 
-class volley
-{
-public:
-  /**
-   * Constructor
-   */
-  volley();
+namespace vl {
 
-  /**
-   * Launch application
-   */
-  void run();
-
-  /**
-   * Render sprites
-   */
-  void render();
-
-  /**
-   * Update state
-   */
-  void update();
-
-
-  /**
-   * Destructor
-   */
-  ~volley();
-
-private:
-  void handle_events();
-  vl::player p;
-  sf::RenderWindow* window;
+enum class player_state {
+  VL_JUMPING,
 };
 
+
+class player {
+  public:
+    player(const char* image_file);
+    ~player();
+
+    void move(const sf::Vector2f& v);
+    void jump();
+    void update(double dt);
+    sf::Sprite* get_sprite() const;
+  private:
+    sf::Vector2f position;
+    sf::Vector2f velocity;
+    sf::Vector2f acceleration;
+    double rotation;
+
+    sf::Texture* texture;
+    sf::Sprite* sprite;
+  };
+}
 #endif

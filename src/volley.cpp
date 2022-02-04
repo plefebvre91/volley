@@ -22,16 +22,46 @@ SOFTWARE. */
 
 #include "volley.hpp"
 #include "constants.hpp"
+#include <X11/Xlib.h>
+#include <thread>
 
 
-volley::volley()
-{
-  window = new
-    sf::RenderWindow(sf::VideoMode(VOLLEY_WINDOW_SIZE, VOLLEY_WINDOW_SIZE), VOLLEY_APP_TITLE);
-  window->setVerticalSyncEnabled(true);
+static void _render(volley* app) {
+  app->render();
 }
-  
-void volley::run()
+static void _update(volley* app) {
+  app->update();
+}
+
+volley::volley():p("ball.png")
+{
+  XInitThreads();
+  window = new
+    sf::RenderWindow(sf::VideoMode(VL_WINDOW_SIZE, VL_WINDOW_SIZE), VL_APP_TITLE);
+  window->setActive(false);
+  window->setFramerateLimit(VL_FPS);
+}
+
+void volley::render() {
+  sf::Clock clock;
+
+  while(window->isOpen()){
+    window->clear();
+    window->draw(*p.get_sprite());
+    window->display();
+  }
+}
+
+void volley::update() {
+  sf::Clock clock;
+  while(window->isOpen()){
+    double dt = clock.restart().asSeconds();
+  	p.update(dt);
+    std::this_thread::sleep_for(std::chrono::milliseconds(VL_UPDATE_THREAD_MS));
+  }
+}
+
+void volley::handle_events()
 {
   // Start the game loop
   while (window->isOpen())
@@ -39,20 +69,36 @@ void volley::run()
     // Process events
     sf::Event event;
     while (window->pollEvent(event))
-      {
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
-	  window->close();
-      
-	if (event.type == sf::Event::Closed)
-	  window->close();
-    }
-    
-    window->clear();
+    {
+      if(event.type == sf::Event::KeyPressed) {
+        switch(event.key.code) {
+        case sf::Keyboard::Space: p.jump(); break;
+        case sf::Keyboard::Escape: window->close(); break;
+        default: break;
+        }
+      }
 
-    // DRAW THINGS HERE
-    
-    window->display();
+      if (event.type == sf::Event::Closed)
+        window->close();
+    }
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+      p.move(sf::Vector2f(-5.0, 0));
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+      p.move(sf::Vector2f(5.0, 0));
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(VL_EVENT_THREAD_MS));
   }
+}
+
+void volley::run()
+{
+  std::thread render_thread(&_render, this);
+  std::thread update_thread(&_update, this);
+  handle_events();
+  update_thread.join();
+  render_thread.join();
 }
 
 volley::~volley()

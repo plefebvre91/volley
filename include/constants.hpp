@@ -24,7 +24,11 @@ SOFTWARE. */
 #ifndef CONSTANTS_HPP
 #define CONSTANTS_HPP
 
-#define VOLLEY_APP_TITLE "volley"
-#define VOLLEY_WINDOW_SIZE 600
+#define VL_APP_TITLE "volley"
+#define VL_WINDOW_SIZE 600
+#define VL_EVENT_THREAD_MS 50
+#define VL_UPDATE_THREAD_MS 16
+#define VL_FPS 60
+#define VL_GRAVITY 9.81
 
 #endif
