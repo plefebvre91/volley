@@ -51,6 +51,7 @@ SOFTWARE. */
 // Game
 #define VL_NB_PLAYERS 3
 #define VL_FLOOR 700
+#define VL_SHADOW_WIDTH 60
 
 // Movements
 #define VL_JUMP_STEP 5.0

@@ -50,6 +50,14 @@ volley::volley() {
   players[1]->move(sf::Vector2f(11.0, 0));
   players[2]->move(sf::Vector2f(0.0, 3.0));
 
+
+  for (auto& shadow: shadows) {
+    shadow = new sf::CircleShape(VL_SHADOW_WIDTH/2, 10);
+    shadow->setFillColor(sf::Color(200,200,200));
+    shadow->setOrigin(VL_SHADOW_WIDTH/2, 0);
+    shadow->setScale(1.0,0.3);
+  }
+
   background_texture = new sf::Texture();
   background_texture->loadFromFile("beach.png");
   background = new sf::Sprite(*background_texture);
@@ -72,8 +80,14 @@ void volley::render() {
     window->clear();
 
     window->draw(*background);
+
+    for (auto& shadow: shadows)
+      window->draw(*shadow);
+
     window->draw(*(players[0]->get_sprite()));
     window->draw(*net);
+
+
     window->draw(*(players[1]->get_sprite()));
     window->draw(*(players[2]->get_sprite()));
     window->draw(*tree);
@@ -117,10 +131,10 @@ void volley::resolve_gravity(double dt) {
         position.y =  VL_FLOOR - (size.y/2);                 //That's not supposed to happen, put him back up
     }
 
+
+
     player->set_physics_attributes(position, velocity, acceleration);
   }
-
-
 }
 
 
@@ -183,6 +197,10 @@ void volley::update() {
     resolve_gravity(dt);
     resolve_collisions();
 
+    for (int i=0; i<VL_NB_PLAYERS; i++) {
+      shadows[i]->setPosition(players[i]->get_position().x, 690);
+      shadows[i]->setScale(players[i]->get_position().y/700, 0.3*players[i]->get_position().y/700);
+    }
 
     std::this_thread::sleep_for(std::chrono::milliseconds(VL_UPDATE_THREAD_MS));
   }

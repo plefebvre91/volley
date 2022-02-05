@@ -62,6 +62,7 @@ private:
   void resolve_collisions();
   void resolve_gravity(double dt);
   std::array<vl::player*, VL_NB_PLAYERS> players;
+  std::array<sf::CircleShape*, VL_NB_PLAYERS> shadows;
   sf::RenderWindow* window;
   sf::Sprite* background;
   sf::Texture* background_texture;
