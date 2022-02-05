@@ -2,11 +2,13 @@
 
 ## Description
 
-A volley-ball 2D game built from scratch with multithreaded C++ using SFML.
+A volley-ball 2D game built from scratch with multithreaded C++ using [SFML](https://www.sfml-dev.org/).
 
 ![Screenshot](screenshot.png)
 
 ## Installation
+
+:warning: Code is written for Linux only.
 
 ### Dependencies
 
@@ -24,9 +26,9 @@ sudo apt-get install cmake libsfml-dev
 
 This game was made for fun but also to practice multithreading in C++ and implementing various OOP design patterns.
 
-## Resources
+### Resources
 
-All images come from openclipart.org, except characters which are an home-made creation.
+All images come from [openclipart.org](https://openclipart.org/), except characters which are an home-made creation.
 
 ### General
 
