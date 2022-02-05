@@ -124,14 +124,12 @@ void volley::resolve_gravity(double dt) {
     }
     if(position.y < VL_FLOOR - (size.y/2))
       velocity.y += VL_GRAVITY*dt;
-    else if(position.y >  VL_FLOOR - (size.y/2)) { //If you are below ground
+    else if(position.y >  VL_FLOOR - (size.y/2)) {
       if (velocity.y > 0.0)
         velocity.y *= -VL_BOUND_RESTITUTION;
       else
-        position.y =  VL_FLOOR - (size.y/2);                 //That's not supposed to happen, put him back up
+        position.y = VL_FLOOR - (size.y/2);
     }
-
-
 
     player->set_physics_attributes(position, velocity, acceleration);
   }
