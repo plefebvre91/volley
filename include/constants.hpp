@@ -24,17 +24,35 @@ SOFTWARE. */
 #ifndef CONSTANTS_HPP
 #define CONSTANTS_HPP
 
+// Windows parameters
 #define VL_APP_TITLE "volley"
 #define VL_WINDOW_WIDTH 1200
 #define VL_WINDOW_HEIGHT 720
+#define VL_FPS            60
+
+// Threads parameters
 #define VL_EVENT_THREAD_MS 50
 #define VL_UPDATE_THREAD_MS 16
-#define VL_FPS 60
-#define VL_GRAVITY 9.81
-#define VL_NB_PLAYERS 3
 
+// Physics
+#define VL_BOUND_RESTITUTION 0.2
+#define VL_GRAVITY          9.81
+#define VL_COLLIDER_BALL_R    32
+#define VL_COLLIDER_PLAYER_R  62
+#define VL_DEFAULT_ABSORPTION 0.96
+#define VL_BALL_ABSORPTION 0.99
+#define VL_SUM_DIST_BEFORE_COLLISION (VL_COLLIDER_BALL_R+VL_COLLIDER_PLAYER_R)
+#define VL_DIST_BEFORE_COLLISION ((VL_SUM_DIST_BEFORE_COLLISION)*(VL_SUM_DIST_BEFORE_COLLISION))
+
+#define VL_BOUND_LEFT 50
+#define VL_BOUND_RIGHT (VL_WINDOW_WIDTH-50)
+
+// Game
+#define VL_NB_PLAYERS 3
 #define VL_FLOOR 700
 
+// Movements
+#define VL_JUMP_STEP 10.0
 #define VL_MOVE_STEP 5.0
 #define VL_MOVE_LEFT (-VL_MOVE_STEP)
 #define VL_MOVE_RIGHT (VL_MOVE_STEP)

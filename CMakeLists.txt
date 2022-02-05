@@ -8,7 +8,8 @@ include_directories(include)
 
 set(SRC_FILES src/main.cpp
   src/volley.cpp
-  src/player.cpp)
+  src/player.cpp
+  src/utils.cpp)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 

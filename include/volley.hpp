@@ -59,7 +59,7 @@ public:
 
 private:
   void handle_events();
-  void resolve_collisions(double dt);
+  void resolve_collisions();
   void resolve_gravity(double dt);
   std::array<vl::player*, VL_NB_PLAYERS> players;
   sf::RenderWindow* window;

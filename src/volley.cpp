@@ -22,8 +22,10 @@ SOFTWARE. */
 
 #include "volley.hpp"
 #include "constants.hpp"
+#include "utils.h"
 #include <X11/Xlib.h>
 #include <thread>
+#include <iostream>
 
 
 static void _render(volley* app) {
@@ -42,11 +44,11 @@ volley::volley() {
 
   players[0] = new vl::player("player.png");
   players[1] = new vl::player("player2.png");
-  players[2] = new vl::player("ball.png");
+  players[2] = new vl::player("ball.png", VL_BALL_ABSORPTION);
 
   players[0]->move(sf::Vector2f(-6.0, 0));
-  players[1]->move(sf::Vector2f(6.0, 0));
-  players[2]->move(sf::Vector2f(6.0, 3.0));
+  players[1]->move(sf::Vector2f(11.0, 0));
+  players[2]->move(sf::Vector2f(0.0, 3.0));
 
   background_texture = new sf::Texture();
   background_texture->loadFromFile("beach.png");
@@ -88,38 +90,69 @@ void volley::resolve_gravity(double dt) {
     sf::Vector2f acceleration = player->get_acceleration();
     sf::Vector2u size = player->get_sprite()->getTexture()->getSize();
 
+    if(position.x > VL_BOUND_RIGHT) {
+      position.x = VL_BOUND_RIGHT - 2;
+      velocity.x *= -VL_BOUND_RESTITUTION;
+    }
+    else if(position.x < VL_BOUND_LEFT) {
+      position.x = VL_BOUND_LEFT + 2;
+      velocity.x *= -VL_BOUND_RESTITUTION;
+    }
+    if(position.y <= (size.y/2 + 20)) {
+      position.y =  (size.y/2 + 20);
+      velocity.y *= -VL_BOUND_RESTITUTION;
+    }
     if(position.y < VL_FLOOR - (size.y/2))
       velocity.y += VL_GRAVITY*dt;    //Add gravity
     else if(position.y >  VL_FLOOR - (size.y/2)) { //If you are below ground
       if (velocity.y > 0.0)
-        velocity.y *= -0.6;
+        velocity.y *= -VL_BOUND_RESTITUTION;
       else
         position.y =  VL_FLOOR - (size.y/2);                 //That's not supposed to happen, put him back up
     }
 
     player->set_physics_attributes(position, velocity, acceleration);
   }
+
+
 }
 
 
-void volley::resolve_collisions(double dt) {
-  const std::array<const sf::Vector2u, 3> dimensions {
-    players[0]->get_sprite()->getTexture()->getSize(),
-    players[1]->get_sprite()->getTexture()->getSize(),
-    players[2]->get_sprite()->getTexture()->getSize()
-  };
-
-  const std::array<const sf::FloatRect, 3> bounds {
-    players[0]->get_sprite()->getGlobalBounds(),
-    players[1]->get_sprite()->getGlobalBounds(),
-    players[2]->get_sprite()->getGlobalBounds()
-  };
-
-  const std::array<const sf::Vector2f, 3> positions {
+void volley::resolve_collisions() {
+  std::array<sf::Vector2f, 3> positions {
     players[0]->get_position(),
     players[1]->get_position(),
     players[2]->get_position()
   };
+
+  std::array<sf::Vector2f, 3> velocities {
+    players[0]->get_velocity(),
+    players[1]->get_velocity(),
+    players[2]->get_velocity()
+  };
+
+  std::array<sf::Vector2f, 3> accelerations {
+    players[0]->get_velocity(),
+    players[1]->get_velocity(),
+    players[2]->get_velocity()
+  };
+
+  auto rotation = (velocities[2].x * 180) / (32 * 3.14);
+  players[2]->get_sprite()->rotate(rotation);
+
+  if (vl::utils::sd(positions[0]-sf::Vector2f(0,65), positions[2]) < VL_DIST_BEFORE_COLLISION) {
+    const sf::Vector2f& v = vl::utils::nv(positions[2], (positions[0]-sf::Vector2f(0,65))) ;
+    accelerations[2].x = 10*v.x;
+    accelerations[2].y = 10*v.y;
+    players[2]->set_physics_attributes(positions[2], velocities[2], accelerations[2]);
+  }
+  else if (vl::utils::sd(positions[1]-sf::Vector2f(0,65), positions[2]) < VL_DIST_BEFORE_COLLISION) {
+    const sf::Vector2f& v = vl::utils::nv(positions[2], (positions[1]-sf::Vector2f(0,65))) ;
+    accelerations[2].x = 10*v.x;
+    accelerations[2].y = 10*v.y;
+    players[2]->set_physics_attributes(positions[2], velocities[2], accelerations[2]);
+  }
+
 }
 
 void volley::update() {
@@ -131,7 +164,8 @@ void volley::update() {
       player->update(dt);
 
     resolve_gravity(dt);
-    resolve_collisions(dt);
+    resolve_collisions();
+
 
     std::this_thread::sleep_for(std::chrono::milliseconds(VL_UPDATE_THREAD_MS));
   }
@@ -150,6 +184,9 @@ void volley::handle_events()
         switch(event.key.code) {
         case sf::Keyboard::Z: players[0]->jump(); break;
         case sf::Keyboard::I: players[1]->jump(); break;
+        case sf::Keyboard::G: players[2]->jump(); break;
+        case sf::Keyboard::V: players[2]->move(sf::Vector2f(-5,0)); break;
+        case sf::Keyboard::B: players[2]->move(sf::Vector2f(5,0)); break;
         case sf::Keyboard::Escape: window->close(); break;
         default: break;
         }

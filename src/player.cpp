@@ -25,8 +25,8 @@ SOFTWARE. */
 
 using namespace vl;
 
-player::player(const char* image_file)
-    :position(sf::Vector2f(200,200)),velocity(),acceleration(),rotation(0) {
+player::player(const char* image_file, float a)
+    :position(sf::Vector2f(200,200)),velocity(),acceleration(),rotation(0) , absorption(a){
   texture = new sf::Texture();
   texture->loadFromFile(image_file);
 
@@ -68,27 +68,21 @@ void player::move(const sf::Vector2f& v) {
 }
 
 void player::jump() {
-  acceleration.y = -5;
+  acceleration.y = -VL_JUMP_STEP;
 }
 
 void player::update(double dt) {
   velocity.x += acceleration.x;
   velocity.y += acceleration.y;
 
-  rotation = (velocity.x * 180) / (32 * 3.14);
-
   position.x += velocity.x;
   position.y += velocity.y;
 
-  if(std::abs(velocity.x) != 0) velocity.x *= 0.95;
+  if(std::abs(velocity.x) != 0) velocity.x *= absorption;
   if(std::abs(velocity.x) < 0.01) velocity.x = 0;
-  if(std::abs(rotation) != 0) rotation *= 0.95;
-  if(std::abs(rotation) < 0.01) rotation = 0;
 
   acceleration.y = 0;
   acceleration.x = 0;
 
   sprite->setPosition(position);
-  //sprite->rotate(rotation);
-
 }
