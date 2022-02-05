@@ -42,8 +42,8 @@ volley::volley() {
   window->setActive(false);
   window->setFramerateLimit(VL_FPS);
 
-  players[0] = new vl::player("player.png");
-  players[1] = new vl::player("player2.png");
+  players[0] = new vl::player("player2.png", VL_PLAYER_ABSORPTION);
+  players[1] = new vl::player("player2.png", VL_PLAYER_ABSORPTION);
   players[2] = new vl::player("ball.png", VL_BALL_ABSORPTION);
 
   players[0]->move(sf::Vector2f(-6.0, 0));
@@ -54,10 +54,15 @@ volley::volley() {
   background_texture->loadFromFile("beach.png");
   background = new sf::Sprite(*background_texture);
 
+  tree_texture = new sf::Texture();
+  tree_texture->loadFromFile("tree.png");
+  tree = new sf::Sprite(*tree_texture);
+  tree->setPosition(80, 250);
+
   net_texture = new sf::Texture();
   net_texture->loadFromFile("net.png");
   net = new sf::Sprite(*net_texture);
-  net->setPosition(500,415);
+  net->setPosition(450,415);
 }
 
 void volley::render() {
@@ -71,6 +76,7 @@ void volley::render() {
     window->draw(*net);
     window->draw(*(players[1]->get_sprite()));
     window->draw(*(players[2]->get_sprite()));
+    window->draw(*tree);
 
     window->display();
   }
@@ -103,7 +109,7 @@ void volley::resolve_gravity(double dt) {
       velocity.y *= -VL_BOUND_RESTITUTION;
     }
     if(position.y < VL_FLOOR - (size.y/2))
-      velocity.y += VL_GRAVITY*dt;    //Add gravity
+      velocity.y += VL_GRAVITY*dt;
     else if(position.y >  VL_FLOOR - (size.y/2)) { //If you are below ground
       if (velocity.y > 0.0)
         velocity.y *= -VL_BOUND_RESTITUTION;
@@ -152,7 +158,18 @@ void volley::resolve_collisions() {
     accelerations[2].y = 10*v.y;
     players[2]->set_physics_attributes(positions[2], velocities[2], accelerations[2]);
   }
+  else {
+    // Nothing to do...
+  }
 
+  sf::Vector2f p = net->getPosition();
+  sf::Vector2u s = net->getTexture()->getSize();
+
+  sf::FloatRect net_box(sf::Vector2f(p.x+s.x/2.0 - 10, p.y+50), sf::Vector2f(20, 300));
+
+  if (net_box.contains(positions[2])) {
+    std::cout << "Net hit!\n";
+  }
 }
 
 void volley::update() {

@@ -65,6 +65,8 @@ private:
   sf::RenderWindow* window;
   sf::Sprite* background;
   sf::Texture* background_texture;
+  sf::Sprite* tree;
+  sf::Texture* tree_texture;
   sf::Sprite* net;
   sf::Texture* net_texture;
 };
