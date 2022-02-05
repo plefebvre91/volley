@@ -33,13 +33,29 @@ static void _update(volley* app) {
   app->update();
 }
 
-volley::volley():p("ball.png")
-{
+volley::volley() {
   XInitThreads();
   window = new
-    sf::RenderWindow(sf::VideoMode(VL_WINDOW_SIZE, VL_WINDOW_SIZE), VL_APP_TITLE);
+    sf::RenderWindow(sf::VideoMode(VL_WINDOW_WIDTH, VL_WINDOW_HEIGHT), VL_APP_TITLE);
   window->setActive(false);
   window->setFramerateLimit(VL_FPS);
+
+  players[0] = new vl::player("player.png");
+  players[1] = new vl::player("player2.png");
+  players[2] = new vl::player("ball.png");
+
+  players[0]->move(sf::Vector2f(-6.0, 0));
+  players[1]->move(sf::Vector2f(6.0, 0));
+  players[2]->move(sf::Vector2f(6.0, 3.0));
+
+  background_texture = new sf::Texture();
+  background_texture->loadFromFile("beach.png");
+  background = new sf::Sprite(*background_texture);
+
+  net_texture = new sf::Texture();
+  net_texture->loadFromFile("net.png");
+  net = new sf::Sprite(*net_texture);
+  net->setPosition(500,415);
 }
 
 void volley::render() {
@@ -47,16 +63,76 @@ void volley::render() {
 
   while(window->isOpen()){
     window->clear();
-    window->draw(*p.get_sprite());
+
+    window->draw(*background);
+    window->draw(*(players[0]->get_sprite()));
+    window->draw(*net);
+    window->draw(*(players[1]->get_sprite()));
+    window->draw(*(players[2]->get_sprite()));
+
     window->display();
   }
+}
+
+volley::~volley() {
+  for (auto player: players)
+    delete player;
+
+  delete window;
+}
+
+void volley::resolve_gravity(double dt) {
+  for (auto& player: players) {
+    sf::Vector2f position = player->get_position();
+    sf::Vector2f velocity = player->get_velocity();
+    sf::Vector2f acceleration = player->get_acceleration();
+    sf::Vector2u size = player->get_sprite()->getTexture()->getSize();
+
+    if(position.y < VL_FLOOR - (size.y/2))
+      velocity.y += VL_GRAVITY*dt;    //Add gravity
+    else if(position.y >  VL_FLOOR - (size.y/2)) { //If you are below ground
+      if (velocity.y > 0.0)
+        velocity.y *= -0.6;
+      else
+        position.y =  VL_FLOOR - (size.y/2);                 //That's not supposed to happen, put him back up
+    }
+
+    player->set_physics_attributes(position, velocity, acceleration);
+  }
+}
+
+
+void volley::resolve_collisions(double dt) {
+  const std::array<const sf::Vector2u, 3> dimensions {
+    players[0]->get_sprite()->getTexture()->getSize(),
+    players[1]->get_sprite()->getTexture()->getSize(),
+    players[2]->get_sprite()->getTexture()->getSize()
+  };
+
+  const std::array<const sf::FloatRect, 3> bounds {
+    players[0]->get_sprite()->getGlobalBounds(),
+    players[1]->get_sprite()->getGlobalBounds(),
+    players[2]->get_sprite()->getGlobalBounds()
+  };
+
+  const std::array<const sf::Vector2f, 3> positions {
+    players[0]->get_position(),
+    players[1]->get_position(),
+    players[2]->get_position()
+  };
 }
 
 void volley::update() {
   sf::Clock clock;
   while(window->isOpen()){
-    double dt = clock.restart().asSeconds();
-  	p.update(dt);
+    auto dt = clock.restart().asSeconds();
+
+    for (auto& player: players)
+      player->update(dt);
+
+    resolve_gravity(dt);
+    resolve_collisions(dt);
+
     std::this_thread::sleep_for(std::chrono::milliseconds(VL_UPDATE_THREAD_MS));
   }
 }
@@ -72,7 +148,8 @@ void volley::handle_events()
     {
       if(event.type == sf::Event::KeyPressed) {
         switch(event.key.code) {
-        case sf::Keyboard::Space: p.jump(); break;
+        case sf::Keyboard::Z: players[0]->jump(); break;
+        case sf::Keyboard::I: players[1]->jump(); break;
         case sf::Keyboard::Escape: window->close(); break;
         default: break;
         }
@@ -82,11 +159,17 @@ void volley::handle_events()
         window->close();
     }
 
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
-      p.move(sf::Vector2f(-5.0, 0));
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
+      players[0]->move(sf::Vector2f(VL_MOVE_LEFT, 0));
 
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-      p.move(sf::Vector2f(5.0, 0));
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+      players[0]->move(sf::Vector2f(VL_MOVE_RIGHT, 0));
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::J))
+      players[1]->move(sf::Vector2f(VL_MOVE_LEFT, 0));
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::L))
+      players[1]->move(sf::Vector2f(VL_MOVE_RIGHT, 0));
 
     std::this_thread::sleep_for(std::chrono::milliseconds(VL_EVENT_THREAD_MS));
   }
@@ -99,9 +182,4 @@ void volley::run()
   handle_events();
   update_thread.join();
   render_thread.join();
-}
-
-volley::~volley()
-{
-  delete window;
 }

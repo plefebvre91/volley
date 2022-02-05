@@ -45,6 +45,24 @@ sf::Sprite* player::get_sprite() const {
   return sprite;
 }
 
+const sf::Vector2f& player::get_position() {
+  return position;
+}
+
+const sf::Vector2f& player::get_velocity() {
+  return velocity;
+}
+
+const sf::Vector2f& player::get_acceleration() {
+  return acceleration;
+}
+
+void player::set_physics_attributes(const sf::Vector2f& p, const sf::Vector2f& v, const sf::Vector2f& a) {
+  position = p;
+  velocity = v;
+  acceleration = a;
+}
+
 void player::move(const sf::Vector2f& v) {
   velocity.x = v.x;
 }
@@ -54,15 +72,6 @@ void player::jump() {
 }
 
 void player::update(double dt) {
-  if(position.y < 500)                  //If you are above ground
-      velocity.y += VL_GRAVITY*dt;    //Add gravity
-    else if(position.y > 500) { //If you are below ground
-      if (velocity.y > 0.0)
-        velocity.y *= -0.6;
-      else
-        position.y = 500;                 //That's not supposed to happen, put him back up
-    }
-
   velocity.x += acceleration.x;
   velocity.y += acceleration.y;
 
@@ -80,6 +89,6 @@ void player::update(double dt) {
   acceleration.x = 0;
 
   sprite->setPosition(position);
-  sprite->rotate(rotation);
+  //sprite->rotate(rotation);
 
 }

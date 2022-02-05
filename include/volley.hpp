@@ -25,6 +25,7 @@ SOFTWARE. */
 #define VOLLEY_HPP
 
 #include <SFML/Graphics.hpp>
+#include "constants.hpp"
 #include "player.hpp"
 
 class volley
@@ -34,6 +35,11 @@ public:
    * Constructor
    */
   volley();
+
+  /**
+   * Constructor
+   */
+  ~volley();
 
   /**
    * Launch application
@@ -51,15 +57,16 @@ public:
   void update();
 
 
-  /**
-   * Destructor
-   */
-  ~volley();
-
 private:
   void handle_events();
-  vl::player p;
+  void resolve_collisions(double dt);
+  void resolve_gravity(double dt);
+  std::array<vl::player*, VL_NB_PLAYERS> players;
   sf::RenderWindow* window;
+  sf::Sprite* background;
+  sf::Texture* background_texture;
+  sf::Sprite* net;
+  sf::Texture* net_texture;
 };
 
 #endif

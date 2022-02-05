@@ -25,10 +25,17 @@ SOFTWARE. */
 #define CONSTANTS_HPP
 
 #define VL_APP_TITLE "volley"
-#define VL_WINDOW_SIZE 600
+#define VL_WINDOW_WIDTH 1200
+#define VL_WINDOW_HEIGHT 720
 #define VL_EVENT_THREAD_MS 50
 #define VL_UPDATE_THREAD_MS 16
 #define VL_FPS 60
 #define VL_GRAVITY 9.81
+#define VL_NB_PLAYERS 3
 
+#define VL_FLOOR 700
+
+#define VL_MOVE_STEP 5.0
+#define VL_MOVE_LEFT (-VL_MOVE_STEP)
+#define VL_MOVE_RIGHT (VL_MOVE_STEP)
 #endif
