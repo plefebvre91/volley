@@ -28,228 +28,231 @@ SOFTWARE. */
 #include <iostream>
 
 
-static void _render(volley* app) {
-  app->render();
-}
-static void _update(volley* app) {
-  app->update();
-}
+namespace vl {
 
-volley::volley() {
-  XInitThreads();
-  window = new
-    sf::RenderWindow(sf::VideoMode(VL_WINDOW_WIDTH, VL_WINDOW_HEIGHT), VL_APP_TITLE);
-  window->setActive(false);
-  window->setFramerateLimit(VL_FPS);
-
-  players[0] = new vl::player("player2.png", VL_PLAYER_ABSORPTION);
-  players[1] = new vl::player("player2.png", VL_PLAYER_ABSORPTION);
-  players[2] = new vl::player("ball.png", VL_BALL_ABSORPTION);
-
-  players[0]->move(sf::Vector2f(-6.0, 0));
-  players[1]->move(sf::Vector2f(11.0, 0));
-  players[2]->move(sf::Vector2f(0.0, 3.0));
-
-
-  for (auto& shadow: shadows) {
-    shadow = new sf::CircleShape(VL_SHADOW_WIDTH/2, 10);
-    shadow->setFillColor(sf::Color(200,200,200));
-    shadow->setOrigin(VL_SHADOW_WIDTH/2, 0);
-    shadow->setScale(1.0,0.3);
+  static void _render(vl::Volley* app) {
+    app->render();
+  }
+  static void _update(vl::Volley* app) {
+    app->update();
   }
 
-  background_texture = new sf::Texture();
-  background_texture->loadFromFile("beach.png");
-  background = new sf::Sprite(*background_texture);
+  Volley::Volley() {
+    XInitThreads();
+    window = new
+      sf::RenderWindow(sf::VideoMode(VL_WINDOW_WIDTH, VL_WINDOW_HEIGHT), VL_APP_TITLE);
+    window->setActive(false);
+    window->setFramerateLimit(VL_FPS);
 
-  tree_texture = new sf::Texture();
-  tree_texture->loadFromFile("tree.png");
-  tree = new sf::Sprite(*tree_texture);
-  tree->setPosition(80, 250);
+    players[0] = new vl::Player("player2.png", VL_PLAYER_ABSORPTION);
+    players[1] = new vl::Player("player2.png", VL_PLAYER_ABSORPTION);
+    players[2] = new vl::Player("ball.png", VL_BALL_ABSORPTION);
 
-  net_texture = new sf::Texture();
-  net_texture->loadFromFile("net.png");
-  net = new sf::Sprite(*net_texture);
-  net->setPosition(450,415);
-}
-
-void volley::render() {
-  sf::Clock clock;
-
-  while(window->isOpen()){
-    window->clear();
-
-    window->draw(*background);
-
-    for (auto& shadow: shadows)
-      window->draw(*shadow);
-
-    window->draw(*(players[0]->get_sprite()));
-    window->draw(*net);
+    players[0]->move(sf::Vector2f(-6.0, 0));
+    players[1]->move(sf::Vector2f(11.0, 0));
+    players[2]->move(sf::Vector2f(0.0, 3.0));
 
 
-    window->draw(*(players[1]->get_sprite()));
-    window->draw(*(players[2]->get_sprite()));
-    window->draw(*tree);
+    for (auto& shadow: shadows) {
+      shadow = new sf::CircleShape(VL_SHADOW_WIDTH/2, 10);
+      shadow->setFillColor(sf::Color(200,200,200));
+      shadow->setOrigin(VL_SHADOW_WIDTH/2, 0);
+      shadow->setScale(1.0,0.3);
+    }
 
-    window->display();
+    background_texture = new sf::Texture();
+    background_texture->loadFromFile("beach.png");
+    background = new sf::Sprite(*background_texture);
+
+    tree_texture = new sf::Texture();
+    tree_texture->loadFromFile("tree.png");
+    tree = new sf::Sprite(*tree_texture);
+    tree->setPosition(80, 250);
+
+    net_texture = new sf::Texture();
+    net_texture->loadFromFile("net.png");
+    net = new sf::Sprite(*net_texture);
+    net->setPosition(450,415);
   }
-}
 
-volley::~volley() {
-  for (auto player: players)
-    delete player;
+  void Volley::render() {
+    sf::Clock clock;
 
-  delete window;
-}
+    while(window->isOpen()){
+      window->clear();
 
-void volley::resolve_gravity(double dt) {
-  for (auto& player: players) {
-    sf::Vector2f position = player->get_position();
-    sf::Vector2f velocity = player->get_velocity();
-    sf::Vector2f acceleration = player->get_acceleration();
-    sf::Vector2u size = player->get_sprite()->getTexture()->getSize();
+      window->draw(*background);
 
-    if(position.x > VL_BOUND_RIGHT) {
-      position.x = VL_BOUND_RIGHT - 2;
-      velocity.x *= -VL_BOUND_RESTITUTION;
+      for (auto& shadow: shadows)
+        window->draw(*shadow);
+
+      window->draw(*(players[0]->getSprite()));
+      window->draw(*net);
+
+
+      window->draw(*(players[1]->getSprite()));
+      window->draw(*(players[2]->getSprite()));
+      window->draw(*tree);
+
+      window->display();
     }
-    else if(position.x < VL_BOUND_LEFT) {
-      position.x = VL_BOUND_LEFT + 2;
-      velocity.x *= -VL_BOUND_RESTITUTION;
-    }
-    if(position.y <= (size.y/2 + 20)) {
-      position.y =  (size.y/2 + 20);
-      velocity.y *= -VL_BOUND_RESTITUTION;
-    }
-    if(position.y < VL_FLOOR - (size.y/2))
-      velocity.y += VL_GRAVITY*dt;
-    else if(position.y >  VL_FLOOR - (size.y/2)) {
-      if (velocity.y > 0.0)
+  }
+
+  Volley::~Volley() {
+    for (auto player: players)
+      delete player;
+
+    delete window;
+  }
+
+  void Volley::resolveGravity(double dt) {
+    for (auto& player: players) {
+      sf::Vector2f position = player->getPosition();
+      sf::Vector2f velocity = player->getVelocity();
+      sf::Vector2f acceleration = player->getAcceleration();
+      sf::Vector2u size = player->getSprite()->getTexture()->getSize();
+
+      if(position.x > VL_BOUND_RIGHT) {
+        position.x = VL_BOUND_RIGHT - 2;
+        velocity.x *= -VL_BOUND_RESTITUTION;
+      }
+      else if(position.x < VL_BOUND_LEFT) {
+        position.x = VL_BOUND_LEFT + 2;
+        velocity.x *= -VL_BOUND_RESTITUTION;
+      }
+      if(position.y <= (size.y/2 + 20)) {
+        position.y =  (size.y/2 + 20);
         velocity.y *= -VL_BOUND_RESTITUTION;
-      else
-        position.y = VL_FLOOR - (size.y/2);
-    }
-
-    player->set_physics_attributes(position, velocity, acceleration);
-  }
-}
-
-
-void volley::resolve_collisions() {
-  std::array<sf::Vector2f, 3> positions {
-    players[0]->get_position(),
-    players[1]->get_position(),
-    players[2]->get_position()
-  };
-
-  std::array<sf::Vector2f, 3> velocities {
-    players[0]->get_velocity(),
-    players[1]->get_velocity(),
-    players[2]->get_velocity()
-  };
-
-  std::array<sf::Vector2f, 3> accelerations {
-    players[0]->get_velocity(),
-    players[1]->get_velocity(),
-    players[2]->get_velocity()
-  };
-
-  auto rotation = (velocities[2].x * 180) / (32 * 3.14);
-  players[2]->get_sprite()->rotate(rotation);
-
-  if (vl::utils::sd(positions[0]-sf::Vector2f(0,65), positions[2]) < VL_DIST_BEFORE_COLLISION) {
-    const sf::Vector2f& v = vl::utils::nv(positions[2], (positions[0]-sf::Vector2f(0,65))) ;
-    accelerations[2].x = 10*v.x;
-    accelerations[2].y = 10*v.y;
-    players[2]->set_physics_attributes(positions[2], velocities[2], accelerations[2]);
-  }
-  else if (vl::utils::sd(positions[1]-sf::Vector2f(0,65), positions[2]) < VL_DIST_BEFORE_COLLISION) {
-    const sf::Vector2f& v = vl::utils::nv(positions[2], (positions[1]-sf::Vector2f(0,65))) ;
-    accelerations[2].x = 10*v.x;
-    accelerations[2].y = 10*v.y;
-    players[2]->set_physics_attributes(positions[2], velocities[2], accelerations[2]);
-  }
-  else {
-    // Nothing to do...
-  }
-
-  sf::Vector2f p = net->getPosition();
-  sf::Vector2u s = net->getTexture()->getSize();
-
-  sf::FloatRect net_box(sf::Vector2f(p.x+s.x/2.0 - 10, p.y+50), sf::Vector2f(20, 300));
-
-  if (net_box.contains(positions[2])) {
-    std::cout << "Net hit!\n";
-  }
-}
-
-void volley::update() {
-  sf::Clock clock;
-  while(window->isOpen()){
-    auto dt = clock.restart().asSeconds();
-
-    for (auto& player: players)
-      player->update(dt);
-
-    resolve_gravity(dt);
-    resolve_collisions();
-
-    for (int i=0; i<VL_NB_PLAYERS; i++) {
-      shadows[i]->setPosition(players[i]->get_position().x, 690);
-      shadows[i]->setScale(players[i]->get_position().y/700, 0.3*players[i]->get_position().y/700);
-    }
-
-    std::this_thread::sleep_for(std::chrono::milliseconds(VL_UPDATE_THREAD_MS));
-  }
-}
-
-void volley::handle_events()
-{
-  // Start the game loop
-  while (window->isOpen())
-  {
-    // Process events
-    sf::Event event;
-    while (window->pollEvent(event))
-    {
-      if(event.type == sf::Event::KeyPressed) {
-        switch(event.key.code) {
-        case sf::Keyboard::Z: players[0]->jump(); break;
-        case sf::Keyboard::I: players[1]->jump(); break;
-        case sf::Keyboard::G: players[2]->jump(); break;
-        case sf::Keyboard::V: players[2]->move(sf::Vector2f(-5,0)); break;
-        case sf::Keyboard::B: players[2]->move(sf::Vector2f(5,0)); break;
-        case sf::Keyboard::Escape: window->close(); break;
-        default: break;
-        }
+      }
+      if(position.y < VL_FLOOR - (size.y/2))
+        velocity.y += VL_GRAVITY*dt;
+      else if(position.y >  VL_FLOOR - (size.y/2)) {
+        if (velocity.y > 0.0)
+          velocity.y *= -VL_BOUND_RESTITUTION;
+        else
+          position.y = VL_FLOOR - (size.y/2);
       }
 
-      if (event.type == sf::Event::Closed)
-        window->close();
+      player->setPhysicsAttributes(position, velocity, acceleration);
+    }
+  }
+
+
+  void Volley::resolveCollisions() {
+    std::array<sf::Vector2f, 3> positions {
+      players[0]->getPosition(),
+      players[1]->getPosition(),
+      players[2]->getPosition()
+    };
+
+    std::array<sf::Vector2f, 3> velocities {
+      players[0]->getVelocity(),
+      players[1]->getVelocity(),
+      players[2]->getVelocity()
+    };
+
+    std::array<sf::Vector2f, 3> accelerations {
+      players[0]->getVelocity(),
+      players[1]->getVelocity(),
+      players[2]->getVelocity()
+    };
+
+    auto rotation = (velocities[2].x * 180) / (32 * 3.14);
+    players[2]->getSprite()->rotate(rotation);
+
+    if (vl::utils::sd(positions[0]-sf::Vector2f(0,65), positions[2]) < VL_DIST_BEFORE_COLLISION) {
+      const sf::Vector2f& v = vl::utils::nv(positions[2], (positions[0]-sf::Vector2f(0,65))) ;
+      accelerations[2].x = 10*v.x;
+      accelerations[2].y = 10*v.y;
+      players[2]->setPhysicsAttributes(positions[2], velocities[2], accelerations[2]);
+    }
+    else if (vl::utils::sd(positions[1]-sf::Vector2f(0,65), positions[2]) < VL_DIST_BEFORE_COLLISION) {
+      const sf::Vector2f& v = vl::utils::nv(positions[2], (positions[1]-sf::Vector2f(0,65))) ;
+      accelerations[2].x = 10*v.x;
+      accelerations[2].y = 10*v.y;
+      players[2]->setPhysicsAttributes(positions[2], velocities[2], accelerations[2]);
+    }
+    else {
+      // Nothing to do...
     }
 
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
-      players[0]->move(sf::Vector2f(VL_MOVE_LEFT, 0));
+    const sf::Vector2f p = net->getPosition();
+    const sf::Vector2u s = net->getTexture()->getSize();
 
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-      players[0]->move(sf::Vector2f(VL_MOVE_RIGHT, 0));
+    sf::FloatRect net_box(sf::Vector2f(p.x+s.x/2.0 - 10, p.y+50), sf::Vector2f(20, 300));
 
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::J))
-      players[1]->move(sf::Vector2f(VL_MOVE_LEFT, 0));
-
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::L))
-      players[1]->move(sf::Vector2f(VL_MOVE_RIGHT, 0));
-
-    std::this_thread::sleep_for(std::chrono::milliseconds(VL_EVENT_THREAD_MS));
+    if (net_box.contains(positions[2])) {
+      std::cout << "Net hit!\n";
+    }
   }
-}
 
-void volley::run()
-{
-  std::thread render_thread(&_render, this);
-  std::thread update_thread(&_update, this);
-  handle_events();
-  update_thread.join();
-  render_thread.join();
+  void Volley::update() {
+    sf::Clock clock;
+    while(window->isOpen()){
+      auto dt = clock.restart().asSeconds();
+
+      for (auto& player: players)
+        player->update(dt);
+
+      resolveGravity(dt);
+      resolveCollisions();
+
+      for (int i=0; i<VL_NB_PLAYERS; i++) {
+        shadows[i]->setPosition(players[i]->getPosition().x, 690);
+        shadows[i]->setScale(players[i]->getPosition().y/700, 0.3*players[i]->getPosition().y/700);
+      }
+
+      std::this_thread::sleep_for(std::chrono::milliseconds(VL_UPDATE_THREAD_MS));
+    }
+  }
+
+  void Volley::handleEvents()
+  {
+    // Start the game loop
+    while (window->isOpen())
+    {
+      // Process events
+      sf::Event event;
+      while (window->pollEvent(event))
+      {
+        if(event.type == sf::Event::KeyPressed) {
+          switch(event.key.code) {
+          case sf::Keyboard::Z: players[0]->jump(); break;
+          case sf::Keyboard::I: players[1]->jump(); break;
+          case sf::Keyboard::G: players[2]->jump(); break;
+          case sf::Keyboard::V: players[2]->move(sf::Vector2f(-5,0)); break;
+          case sf::Keyboard::B: players[2]->move(sf::Vector2f(5,0)); break;
+          case sf::Keyboard::Escape: window->close(); break;
+          default: break;
+          }
+        }
+
+        if (event.type == sf::Event::Closed)
+          window->close();
+      }
+
+      if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
+        players[0]->move(sf::Vector2f(VL_MOVE_LEFT, 0));
+
+      if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+        players[0]->move(sf::Vector2f(VL_MOVE_RIGHT, 0));
+
+      if (sf::Keyboard::isKeyPressed(sf::Keyboard::J))
+        players[1]->move(sf::Vector2f(VL_MOVE_LEFT, 0));
+
+      if (sf::Keyboard::isKeyPressed(sf::Keyboard::L))
+        players[1]->move(sf::Vector2f(VL_MOVE_RIGHT, 0));
+
+      std::this_thread::sleep_for(std::chrono::milliseconds(VL_EVENT_THREAD_MS));
+    }
+  }
+
+  void Volley::run()
+  {
+    std::thread render_thread(&_render, this);
+    std::thread update_thread(&_update, this);
+    handleEvents();
+    update_thread.join();
+    render_thread.join();
+  }
 }

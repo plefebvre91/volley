@@ -26,13 +26,12 @@ int main(int argc, char** argv)
 {
   (void) argc;
   (void) argv;
-  
-  volley* application = new volley();
+
+  vl::Volley* application = new vl::Volley();
 
   application->run();
 
   delete application;
-  
+
   return 0;
 }
-

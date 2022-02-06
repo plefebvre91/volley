@@ -23,66 +23,66 @@ SOFTWARE. */
 #include "player.hpp"
 #include "constants.hpp"
 
-using namespace vl;
+namespace vl {
+  Player::Player(const char* file, float a)
+      :position(sf::Vector2f(200,200)),velocity(),acceleration(),rotation(0) , absorption(a){
+    texture = new sf::Texture();
+    texture->loadFromFile(file);
 
-player::player(const char* image_file, float a)
-    :position(sf::Vector2f(200,200)),velocity(),acceleration(),rotation(0) , absorption(a){
-  texture = new sf::Texture();
-  texture->loadFromFile(image_file);
 
+    sprite = new sf::Sprite(*texture);
+    const sf::Vector2u& s = sprite->getTexture()->getSize();
+    sprite->setOrigin(s.x/2, s.y/2);
+  }
 
-  sprite = new sf::Sprite(*texture);
-  const sf::Vector2u& s = sprite->getTexture()->getSize();
-  sprite->setOrigin(s.x/2, s.y/2);
-}
+  Player::~Player() {
+    delete sprite;
+    delete texture;
+  }
 
-player::~player() {
-  delete sprite;
-  delete texture;
-}
+  sf::Sprite* Player::getSprite() const {
+    return sprite;
+  }
 
-sf::Sprite* player::get_sprite() const {
-  return sprite;
-}
+  const sf::Vector2f& Player::getPosition() {
+    return position;
+  }
 
-const sf::Vector2f& player::get_position() {
-  return position;
-}
+  const sf::Vector2f& Player::getVelocity() {
+    return velocity;
+  }
 
-const sf::Vector2f& player::get_velocity() {
-  return velocity;
-}
+  const sf::Vector2f& Player::getAcceleration() {
+    return acceleration;
+  }
 
-const sf::Vector2f& player::get_acceleration() {
-  return acceleration;
-}
+  void Player::setPhysicsAttributes(const sf::Vector2f& p, const sf::Vector2f& v, const sf::Vector2f& a) {
+    position = p;
+    velocity = v;
+    acceleration = a;
+  }
 
-void player::set_physics_attributes(const sf::Vector2f& p, const sf::Vector2f& v, const sf::Vector2f& a) {
-  position = p;
-  velocity = v;
-  acceleration = a;
-}
+  void Player::move(const sf::Vector2f& v) {
+    velocity.x = v.x;
+  }
 
-void player::move(const sf::Vector2f& v) {
-  velocity.x = v.x;
-}
+  void Player::jump() {
+    acceleration.y = -VL_JUMP_STEP;
+  }
 
-void player::jump() {
-  acceleration.y = -VL_JUMP_STEP;
-}
+  void Player::update(double dt) {
+    velocity.x += acceleration.x;
+    velocity.y += acceleration.y;
 
-void player::update(double dt) {
-  velocity.x += acceleration.x;
-  velocity.y += acceleration.y;
+    position.x += velocity.x;
+    position.y += velocity.y;
 
-  position.x += velocity.x;
-  position.y += velocity.y;
+    if(std::abs(velocity.x) != 0) velocity.x *= absorption;
+    if(std::abs(velocity.x) < 0.01) velocity.x = 0;
 
-  if(std::abs(velocity.x) != 0) velocity.x *= absorption;
-  if(std::abs(velocity.x) < 0.01) velocity.x = 0;
+    acceleration.y = 0;
+    acceleration.x = 0;
 
-  acceleration.y = 0;
-  acceleration.x = 0;
-
-  sprite->setPosition(position);
+    sprite->setPosition(position);
+  }
 }

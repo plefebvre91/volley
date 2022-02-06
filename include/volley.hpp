@@ -28,48 +28,50 @@ SOFTWARE. */
 #include "constants.hpp"
 #include "player.hpp"
 
-class volley
-{
-public:
-  /**
-   * Constructor
-   */
-  volley();
+namespace vl {
+  class Volley
+  {
+  public:
+    /**
+     * Constructor
+     */
+    Volley();
 
-  /**
-   * Constructor
-   */
-  ~volley();
+    /**
+     * Constructor
+     */
+    ~Volley();
 
-  /**
-   * Launch application
-   */
-  void run();
+    /**
+     * Launch application
+     */
+    void run();
 
-  /**
-   * Render sprites
-   */
-  void render();
+    /**
+     * Render sprites
+     */
+    void render();
 
-  /**
-   * Update state
-   */
-  void update();
+    /**
+     * Update state
+     */
+    void update();
 
 
-private:
-  void handle_events();
-  void resolve_collisions();
-  void resolve_gravity(double dt);
-  std::array<vl::player*, VL_NB_PLAYERS> players;
-  std::array<sf::CircleShape*, VL_NB_PLAYERS> shadows;
-  sf::RenderWindow* window;
-  sf::Sprite* background;
-  sf::Texture* background_texture;
-  sf::Sprite* tree;
-  sf::Texture* tree_texture;
-  sf::Sprite* net;
-  sf::Texture* net_texture;
-};
+  private:
+    void handleEvents();
+    void resolveCollisions();
+    void resolveGravity(double dt);
+    std::array<vl::Player*, VL_NB_PLAYERS> players;
+    std::array<sf::CircleShape*, VL_NB_PLAYERS> shadows;
+    sf::RenderWindow* window;
+    sf::Sprite* background;
+    sf::Texture* background_texture;
+    sf::Sprite* tree;
+    sf::Texture* tree_texture;
+    sf::Sprite* net;
+    sf::Texture* net_texture;
+  };
+}
 
 #endif
