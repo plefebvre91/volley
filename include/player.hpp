@@ -25,6 +25,7 @@ SOFTWARE. */
 #define PLAYER_HPP
 
 #include <SFML/Graphics.hpp>
+#include "utils.hpp"
 #include "constants.hpp"
 
 namespace vl {
@@ -38,6 +39,7 @@ enum class PlayerState {
 
 enum class Event {
   JUMP,
+  RESET,
   RIGHT,
   LEFT,
 };
@@ -60,6 +62,8 @@ class Player {
     const sf::Vector2f& getAcceleration();
     void resetPosition();
     void setPosition(const sf::Vector2f& p);
+    void bounceIfCollide(const Player& anotherPlayer);
+    void rotate();
 
     void setPhysicsAttributes(const sf::Vector2f&, const sf::Vector2f&, const sf::Vector2f&);
 

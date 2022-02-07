@@ -45,6 +45,20 @@ namespace vl {
 
   void Player::resetPosition() {
     position.x = area.left + area.width/2;
+    position.y = area.top + 3*area.height/4;
+  }
+
+  void Player::rotate() {
+    auto rotation = (velocity.x * 180) / (32 * 3.14);
+    sprite->rotate(rotation);
+  }
+
+  void Player::bounceIfCollide(const Player& anotherPlayer) {
+    if(vl::utils::sd(anotherPlayer.position-sf::Vector2f(0,65), position) < VL_DIST_BEFORE_COLLISION) {
+      const sf::Vector2f& v = vl::utils::nv(position, (anotherPlayer.position-sf::Vector2f(0,65))) ;
+      acceleration.x = 2*v.x;
+      acceleration.y = 2*v.y;
+    }
   }
 
   sf::Sprite* Player::getSprite() const {
@@ -85,6 +99,11 @@ namespace vl {
 
   void Player::handleEvent(Event e) {
     switch (e) {
+      case Event::RESET:
+        state = PlayerState::IDLE;
+        resetPosition();
+      break;
+
       case Event::JUMP:
         if (state != PlayerState::JUMPING) {
           state = PlayerState::JUMPING;

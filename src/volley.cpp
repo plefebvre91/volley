@@ -22,7 +22,7 @@ SOFTWARE. */
 
 #include "volley.hpp"
 #include "constants.hpp"
-#include "utils.h"
+#include "utils.hpp"
 #include <X11/Xlib.h>
 #include <thread>
 #include <iostream>
@@ -44,18 +44,17 @@ namespace vl {
     window->setActive(false);
     window->setFramerateLimit(VL_FPS);
 
-    players[0] = new vl::Player("player2.png", VL_PLAYER_ABSORPTION);
+    players[0] = new vl::Player("player.png", VL_PLAYER_ABSORPTION);
     players[1] = new vl::Player("player2.png", VL_PLAYER_ABSORPTION);
     players[2] = new vl::Player("ball.png", VL_BALL_ABSORPTION);
 
-    players[0]->setPlayableArea(sf::FloatRect(VL_MARGIN, VL_MARGIN, VL_WINDOW_WIDTH/2 - VL_MARGIN, VL_WINDOW_HEIGHT - VL_MARGIN));
-    players[1]->setPlayableArea(sf::FloatRect(VL_WINDOW_WIDTH/2 + VL_MARGIN, VL_MARGIN, VL_WINDOW_WIDTH/2 - VL_MARGIN, VL_WINDOW_HEIGHT - VL_MARGIN));
+    players[0]->setPlayableArea(sf::FloatRect(VL_MARGIN, VL_MARGIN, VL_WINDOW_WIDTH/2 - 4*VL_MARGIN, VL_WINDOW_HEIGHT - VL_MARGIN));
+    players[1]->setPlayableArea(sf::FloatRect(VL_WINDOW_WIDTH/2 + 4*VL_MARGIN, VL_MARGIN, VL_WINDOW_WIDTH/2 - VL_MARGIN, VL_WINDOW_HEIGHT - VL_MARGIN));
     players[2]->setPlayableArea(sf::FloatRect(VL_MARGIN, VL_MARGIN, VL_WINDOW_WIDTH - VL_MARGIN, VL_WINDOW_HEIGHT - VL_MARGIN));
+
 
     for (auto& player: players)
       player->resetPosition();
-
-    players[2]->move(sf::Vector2f(-4.0, 0));
 
     for (auto& shadow: shadows) {
       shadow = new sf::CircleShape(VL_SHADOW_WIDTH/2, 10);
@@ -83,6 +82,7 @@ namespace vl {
     sf::Clock clock;
 
     while(window->isOpen()){
+      sf::Vector2f ball = players[2]->getPosition();
       window->clear();
 
       window->draw(*background);
@@ -90,12 +90,19 @@ namespace vl {
       for (auto& shadow: shadows)
         window->draw(*shadow);
 
+
       window->draw(*(players[0]->getSprite()));
-      window->draw(*net);
 
+      if (ball.x < VL_WINDOW_WIDTH/2) {
+        window->draw(*(players[2]->getSprite()));
+        window->draw(*net);
+        window->draw(*(players[1]->getSprite()));
+      } else {
+        window->draw(*net);
+        window->draw(*(players[1]->getSprite()));
+        window->draw(*(players[2]->getSprite()));
+      }
 
-      window->draw(*(players[1]->getSprite()));
-      window->draw(*(players[2]->getSprite()));
       window->draw(*tree);
 
       window->display();
@@ -109,52 +116,17 @@ namespace vl {
     delete window;
   }
 
-
-
   void Volley::resolveCollisions() {
-    std::array<sf::Vector2f, 3> positions {
-      players[0]->getPosition(),
-      players[1]->getPosition(),
-      players[2]->getPosition()
-    };
-
-    std::array<sf::Vector2f, 3> velocities {
-      players[0]->getVelocity(),
-      players[1]->getVelocity(),
-      players[2]->getVelocity()
-    };
-
-    std::array<sf::Vector2f, 3> accelerations {
-      players[0]->getVelocity(),
-      players[1]->getVelocity(),
-      players[2]->getVelocity()
-    };
-
-    auto rotation = (velocities[2].x * 180) / (32 * 3.14);
-    players[2]->getSprite()->rotate(rotation);
-
-    if (vl::utils::sd(positions[0]-sf::Vector2f(0,65), positions[2]) < VL_DIST_BEFORE_COLLISION) {
-      const sf::Vector2f& v = vl::utils::nv(positions[2], (positions[0]-sf::Vector2f(0,65))) ;
-      accelerations[2].x = 10*v.x;
-      accelerations[2].y = 10*v.y;
-      players[2]->setPhysicsAttributes(positions[2], velocities[2], accelerations[2]);
-    }
-    else if (vl::utils::sd(positions[1]-sf::Vector2f(0,65), positions[2]) < VL_DIST_BEFORE_COLLISION) {
-      const sf::Vector2f& v = vl::utils::nv(positions[2], (positions[1]-sf::Vector2f(0,65))) ;
-      accelerations[2].x = 10*v.x;
-      accelerations[2].y = 10*v.y;
-      players[2]->setPhysicsAttributes(positions[2], velocities[2], accelerations[2]);
-    }
-    else {
-      // Nothing to do...
-    }
+    players[2]->rotate();
+    players[2]->bounceIfCollide(*players[0]);
+    players[2]->bounceIfCollide(*players[1]);
 
     const sf::Vector2f p = net->getPosition();
     const sf::Vector2u s = net->getTexture()->getSize();
 
     sf::FloatRect net_box(sf::Vector2f(p.x+s.x/2.0 - 10, p.y+50), sf::Vector2f(20, 300));
 
-    if (net_box.contains(positions[2])) {
+    if (net_box.contains(players[2]->getPosition())) {
       std::cout << "Net hit!\n";
     }
   }
@@ -195,6 +167,11 @@ namespace vl {
           case sf::Keyboard::V: players[2]->handleEvent(vl::Event::LEFT); break;
           case sf::Keyboard::B: players[2]->handleEvent(vl::Event::RIGHT); break;
           case sf::Keyboard::Escape: window->close(); break;
+          case sf::Keyboard::Space:
+            for(auto& player: players)
+              player->handleEvent(vl::Event::RESET);
+          break;
+
           default: break;
           }
         }
