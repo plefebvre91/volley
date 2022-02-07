@@ -29,6 +29,7 @@ SOFTWARE. */
 #define VL_WINDOW_WIDTH 1200
 #define VL_WINDOW_HEIGHT 720
 #define VL_FPS            60
+#define VL_MARGIN         30
 
 // Threads parameters
 #define VL_EVENT_THREAD_MS 50
@@ -54,8 +55,9 @@ SOFTWARE. */
 #define VL_SHADOW_WIDTH 60
 
 // Movements
-#define VL_JUMP_STEP 5.0
-#define VL_MOVE_STEP 10.0
+#define VL_JUMP_STEP 8.0
+#define VL_MOVE_STEP 13.0
 #define VL_MOVE_LEFT (-VL_MOVE_STEP)
 #define VL_MOVE_RIGHT (VL_MOVE_STEP)
+
 #endif

@@ -25,10 +25,9 @@ SOFTWARE. */
 
 namespace vl {
   Player::Player(const char* file, float a)
-      :position(sf::Vector2f(200,200)),velocity(),acceleration(),rotation(0) , absorption(a){
+      :position(), velocity(),acceleration(),rotation(0) , absorption(a), state(PlayerState::IDLE), area(){
     texture = new sf::Texture();
     texture->loadFromFile(file);
-
 
     sprite = new sf::Sprite(*texture);
     const sf::Vector2u& s = sprite->getTexture()->getSize();
@@ -40,12 +39,24 @@ namespace vl {
     delete texture;
   }
 
+  void Player::setPlayableArea(const sf::FloatRect& a) {
+      area = a;
+  }
+
+  void Player::resetPosition() {
+    position.x = area.left + area.width/2;
+  }
+
   sf::Sprite* Player::getSprite() const {
     return sprite;
   }
 
   const sf::Vector2f& Player::getPosition() {
     return position;
+  }
+
+  void Player::setPosition(const sf::Vector2f& p) {
+    position = p;
   }
 
   const sf::Vector2f& Player::getVelocity() {
@@ -63,14 +74,45 @@ namespace vl {
   }
 
   void Player::move(const sf::Vector2f& v) {
-    velocity.x = v.x;
+    if (area.contains(position+v)) {
+      velocity.x = v.x;
+    }
   }
 
   void Player::jump() {
     acceleration.y = -VL_JUMP_STEP;
   }
 
+  void Player::handleEvent(Event e) {
+    switch (e) {
+      case Event::JUMP:
+        if (state != PlayerState::JUMPING) {
+          state = PlayerState::JUMPING;
+          jump();
+        }
+      break;
+
+      case Event::RIGHT:
+        if (state != PlayerState::JUMPING) {
+          state = PlayerState::GOING_RIGHT;
+          move(sf::Vector2f(VL_MOVE_STEP, 0.0));
+        }
+      break;
+
+      case Event::LEFT:
+        if (state != PlayerState::JUMPING) {
+          state = PlayerState::GOING_LEFT;
+          move(sf::Vector2f(-VL_MOVE_STEP, 0.0));
+        }
+      break;
+
+      default:  break;
+    }
+  }
+
   void Player::update(double dt) {
+    auto size = sprite->getTexture()->getSize();
+
     velocity.x += acceleration.x;
     velocity.y += acceleration.y;
 
@@ -82,6 +124,21 @@ namespace vl {
 
     acceleration.y = 0;
     acceleration.x = 0;
+
+    // Is in the air
+    if (position.y < VL_FLOOR - (size.y/2)) {
+      velocity.y += VL_GRAVITY*dt;
+    }
+
+    // Rebound
+    else if(position.y >  VL_FLOOR - (size.y/2)) {
+      if (velocity.y > 0.0)
+        velocity.y *= -VL_BOUND_RESTITUTION;
+      else {
+        position.y = VL_FLOOR - (size.y/2);
+        state = PlayerState::IDLE;
+      }
+    }
 
     sprite->setPosition(position);
   }

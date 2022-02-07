@@ -48,10 +48,14 @@ namespace vl {
     players[1] = new vl::Player("player2.png", VL_PLAYER_ABSORPTION);
     players[2] = new vl::Player("ball.png", VL_BALL_ABSORPTION);
 
-    players[0]->move(sf::Vector2f(-6.0, 0));
-    players[1]->move(sf::Vector2f(11.0, 0));
-    players[2]->move(sf::Vector2f(0.0, 3.0));
+    players[0]->setPlayableArea(sf::FloatRect(VL_MARGIN, VL_MARGIN, VL_WINDOW_WIDTH/2 - VL_MARGIN, VL_WINDOW_HEIGHT - VL_MARGIN));
+    players[1]->setPlayableArea(sf::FloatRect(VL_WINDOW_WIDTH/2 + VL_MARGIN, VL_MARGIN, VL_WINDOW_WIDTH/2 - VL_MARGIN, VL_WINDOW_HEIGHT - VL_MARGIN));
+    players[2]->setPlayableArea(sf::FloatRect(VL_MARGIN, VL_MARGIN, VL_WINDOW_WIDTH - VL_MARGIN, VL_WINDOW_HEIGHT - VL_MARGIN));
 
+    for (auto& player: players)
+      player->resetPosition();
+
+    players[2]->move(sf::Vector2f(-4.0, 0));
 
     for (auto& shadow: shadows) {
       shadow = new sf::CircleShape(VL_SHADOW_WIDTH/2, 10);
@@ -105,37 +109,6 @@ namespace vl {
     delete window;
   }
 
-  void Volley::resolveGravity(double dt) {
-    for (auto& player: players) {
-      sf::Vector2f position = player->getPosition();
-      sf::Vector2f velocity = player->getVelocity();
-      sf::Vector2f acceleration = player->getAcceleration();
-      sf::Vector2u size = player->getSprite()->getTexture()->getSize();
-
-      if(position.x > VL_BOUND_RIGHT) {
-        position.x = VL_BOUND_RIGHT - 2;
-        velocity.x *= -VL_BOUND_RESTITUTION;
-      }
-      else if(position.x < VL_BOUND_LEFT) {
-        position.x = VL_BOUND_LEFT + 2;
-        velocity.x *= -VL_BOUND_RESTITUTION;
-      }
-      if(position.y <= (size.y/2 + 20)) {
-        position.y =  (size.y/2 + 20);
-        velocity.y *= -VL_BOUND_RESTITUTION;
-      }
-      if(position.y < VL_FLOOR - (size.y/2))
-        velocity.y += VL_GRAVITY*dt;
-      else if(position.y >  VL_FLOOR - (size.y/2)) {
-        if (velocity.y > 0.0)
-          velocity.y *= -VL_BOUND_RESTITUTION;
-        else
-          position.y = VL_FLOOR - (size.y/2);
-      }
-
-      player->setPhysicsAttributes(position, velocity, acceleration);
-    }
-  }
 
 
   void Volley::resolveCollisions() {
@@ -194,7 +167,6 @@ namespace vl {
       for (auto& player: players)
         player->update(dt);
 
-      resolveGravity(dt);
       resolveCollisions();
 
       for (int i=0; i<VL_NB_PLAYERS; i++) {
@@ -217,11 +189,11 @@ namespace vl {
       {
         if(event.type == sf::Event::KeyPressed) {
           switch(event.key.code) {
-          case sf::Keyboard::Z: players[0]->jump(); break;
-          case sf::Keyboard::I: players[1]->jump(); break;
-          case sf::Keyboard::G: players[2]->jump(); break;
-          case sf::Keyboard::V: players[2]->move(sf::Vector2f(-5,0)); break;
-          case sf::Keyboard::B: players[2]->move(sf::Vector2f(5,0)); break;
+          case sf::Keyboard::Z: players[0]->handleEvent(vl::Event::JUMP); break;
+          case sf::Keyboard::I: players[1]->handleEvent(vl::Event::JUMP); break;
+          case sf::Keyboard::G: players[2]->handleEvent(vl::Event::JUMP); break;
+          case sf::Keyboard::V: players[2]->handleEvent(vl::Event::LEFT); break;
+          case sf::Keyboard::B: players[2]->handleEvent(vl::Event::RIGHT); break;
           case sf::Keyboard::Escape: window->close(); break;
           default: break;
           }
@@ -232,16 +204,16 @@ namespace vl {
       }
 
       if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
-        players[0]->move(sf::Vector2f(VL_MOVE_LEFT, 0));
+        players[0]->handleEvent(vl::Event::LEFT);
 
       if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-        players[0]->move(sf::Vector2f(VL_MOVE_RIGHT, 0));
+        players[0]->handleEvent(vl::Event::RIGHT);
 
       if (sf::Keyboard::isKeyPressed(sf::Keyboard::J))
-        players[1]->move(sf::Vector2f(VL_MOVE_LEFT, 0));
+        players[1]->handleEvent(vl::Event::LEFT);
 
       if (sf::Keyboard::isKeyPressed(sf::Keyboard::L))
-        players[1]->move(sf::Vector2f(VL_MOVE_RIGHT, 0));
+        players[1]->handleEvent(vl::Event::RIGHT);
 
       std::this_thread::sleep_for(std::chrono::milliseconds(VL_EVENT_THREAD_MS));
     }

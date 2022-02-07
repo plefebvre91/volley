@@ -30,7 +30,16 @@ SOFTWARE. */
 namespace vl {
 
 enum class PlayerState {
-  VL_JUMPING,
+  IDLE,
+  JUMPING,
+  GOING_RIGHT,
+  GOING_LEFT,
+};
+
+enum class Event {
+  JUMP,
+  RIGHT,
+  LEFT,
 };
 
 
@@ -39,16 +48,18 @@ class Player {
     Player() = default;
     Player(const char* image_file, float a = VL_DEFAULT_ABSORPTION);
     ~Player();
+    void setPlayableArea(const sf::FloatRect&);
 
     void move(const sf::Vector2f& v);
     void jump();
     void update(double dt);
+    void handleEvent(Event);
     sf::Sprite* getSprite() const;
     const sf::Vector2f& getPosition();
     const sf::Vector2f& getVelocity();
     const sf::Vector2f& getAcceleration();
-
-    void setPosition(const sf::Vector2f&);
+    void resetPosition();
+    void setPosition(const sf::Vector2f& p);
 
     void setPhysicsAttributes(const sf::Vector2f&, const sf::Vector2f&, const sf::Vector2f&);
 
@@ -60,6 +71,8 @@ class Player {
     float absorption;
     sf::Texture* texture;
     sf::Sprite* sprite;
+    PlayerState state;
+    sf::FloatRect area;
   };
 }
 #endif
