@@ -81,12 +81,6 @@ namespace vl {
     return acceleration;
   }
 
-  void Player::setPhysicsAttributes(const sf::Vector2f& p, const sf::Vector2f& v, const sf::Vector2f& a) {
-    position = p;
-    velocity = v;
-    acceleration = a;
-  }
-
   void Player::move(const sf::Vector2f& v) {
     if (area.contains(position+v)) {
       velocity.x = v.x;

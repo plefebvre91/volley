@@ -20,44 +20,40 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE. */
 
+#include "character.hpp"
 
-#ifndef CONSTANTS_HPP
-#define CONSTANTS_HPP
+namespace vl {
+  Character::Character(const char* file, const sf::Vector2f& position, float friction)
+    :Entity(file, position) {
+      _sprite.setOrigin(sf::Vector2f(_texture.getSize() / 2u));
+      _friction = friction;
+    }
 
-// Windows parameters
-#define VL_APP_TITLE "volley"
-#define VL_WINDOW_WIDTH 1200
-#define VL_WINDOW_HEIGHT 720
-#define VL_FPS            60
-#define VL_MARGIN         30
+  void Character::handleEvent(vl::Event e) {
+    switch (e) {
+      case Event::RESET:
+        _state = vl::State::IDLE;
+        reset();
+      break;
 
-// Threads parameters
-#define VL_EVENT_THREAD_MS 50
-#define VL_UPDATE_THREAD_MS 16
+      case Event::JUMP:
+        if (_state != vl::State::JUMPING) {
+          _state = vl::State::JUMPING;
+          jump(VL_JUMP_STEP);
+        }
+      break;
 
-// Physics
-#define VL_BOUND_RESTITUTION 0.2
-#define VL_GRAVITY          9.81
-#define VL_COLLIDER_BALL_R    32
-#define VL_COLLIDER_PLAYER_R  62
-#define VL_DEFAULT_FRICTION 0.96
-#define VL_PLAYER_FRICTION 0.5
-#define VL_BALL_FRICTION 0.99
-#define VL_SUM_DIST_BEFORE_COLLISION (VL_COLLIDER_BALL_R+VL_COLLIDER_PLAYER_R)
-#define VL_DIST_BEFORE_COLLISION ((VL_SUM_DIST_BEFORE_COLLISION)*(VL_SUM_DIST_BEFORE_COLLISION))
+      case Event::RIGHT:
+        _state = vl::State::GOING_RIGHT;
+        move(sf::Vector2f(VL_MOVE_STEP, 0.0));
+      break;
 
-#define VL_BOUND_LEFT 50
-#define VL_BOUND_RIGHT (VL_WINDOW_WIDTH-50)
+      case Event::LEFT:
+        _state = vl::State::GOING_LEFT;
+        move(sf::Vector2f(-VL_MOVE_STEP, 0.0));
+      break;
 
-// Game
-#define VL_NB_PLAYERS 2
-#define VL_FLOOR 700
-#define VL_SHADOW_WIDTH 60
-
-// Movements
-#define VL_JUMP_STEP 8.0
-#define VL_MOVE_STEP 13.0
-#define VL_MOVE_LEFT (-VL_MOVE_STEP)
-#define VL_MOVE_RIGHT (VL_MOVE_STEP)
-
-#endif
+      default:  break;
+    }
+  }
+}

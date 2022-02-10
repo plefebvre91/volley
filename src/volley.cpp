@@ -44,17 +44,13 @@ namespace vl {
     window->setActive(false);
     window->setFramerateLimit(VL_FPS);
 
-    players[0] = new vl::Player("player.png", VL_PLAYER_ABSORPTION);
-    players[1] = new vl::Player("player2.png", VL_PLAYER_ABSORPTION);
-    players[2] = new vl::Player("ball.png", VL_BALL_ABSORPTION);
+    ball = new vl::Ball("ball.png", sf::Vector2f(5*VL_WINDOW_WIDTH/8, 0), VL_BALL_FRICTION);
+    players[0] = new vl::Character("player.png", sf::Vector2f(VL_WINDOW_WIDTH/4, 0), VL_PLAYER_FRICTION);
+    players[1] = new vl::Character("player2.png", sf::Vector2f(3*VL_WINDOW_WIDTH/4, 0), VL_PLAYER_FRICTION);
+    //players[0]->setPlayableArea(sf::FloatRect(VL_MARGIN, VL_MARGIN, VL_WINDOW_WIDTH/2 - 4*VL_MARGIN, VL_WINDOW_HEIGHT - VL_MARGIN));
+    //players[1]->setPlayableArea(sf::FloatRect(VL_WINDOW_WIDTH/2 + 4*VL_MARGIN, VL_MARGIN, VL_WINDOW_WIDTH/2 - VL_MARGIN, VL_WINDOW_HEIGHT - VL_MARGIN));
+    //players[2]->setPlayableArea(sf::FloatRect(VL_MARGIN, VL_MARGIN, VL_WINDOW_WIDTH - VL_MARGIN, VL_WINDOW_HEIGHT - VL_MARGIN));
 
-    players[0]->setPlayableArea(sf::FloatRect(VL_MARGIN, VL_MARGIN, VL_WINDOW_WIDTH/2 - 4*VL_MARGIN, VL_WINDOW_HEIGHT - VL_MARGIN));
-    players[1]->setPlayableArea(sf::FloatRect(VL_WINDOW_WIDTH/2 + 4*VL_MARGIN, VL_MARGIN, VL_WINDOW_WIDTH/2 - VL_MARGIN, VL_WINDOW_HEIGHT - VL_MARGIN));
-    players[2]->setPlayableArea(sf::FloatRect(VL_MARGIN, VL_MARGIN, VL_WINDOW_WIDTH - VL_MARGIN, VL_WINDOW_HEIGHT - VL_MARGIN));
-
-
-    for (auto& player: players)
-      player->resetPosition();
 
     for (auto& shadow: shadows) {
       shadow = new sf::CircleShape(VL_SHADOW_WIDTH/2, 10);
@@ -63,47 +59,36 @@ namespace vl {
       shadow->setScale(1.0,0.3);
     }
 
-    background_texture = new sf::Texture();
-    background_texture->loadFromFile("beach.png");
-    background = new sf::Sprite(*background_texture);
-
-    tree_texture = new sf::Texture();
-    tree_texture->loadFromFile("tree.png");
-    tree = new sf::Sprite(*tree_texture);
-    tree->setPosition(80, 250);
-
-    net_texture = new sf::Texture();
-    net_texture->loadFromFile("net.png");
-    net = new sf::Sprite(*net_texture);
-    net->setPosition(450,415);
+    _sceneObjects[0] = new Entity("beach.png", sf::Vector2f(0,0));
+    _sceneObjects[1] = new Entity("tree.png", sf::Vector2f(80, 250));
+    _sceneObjects[2] = new Entity("net.png", sf::Vector2f(450,415));
   }
 
   void Volley::render() {
     sf::Clock clock;
 
     while(window->isOpen()){
-      sf::Vector2f ball = players[2]->getPosition();
       window->clear();
 
-      window->draw(*background);
+      window->draw(_sceneObjects[0]->getSprite());
 
       for (auto& shadow: shadows)
         window->draw(*shadow);
 
 
-      window->draw(*(players[0]->getSprite()));
+      window->draw(players[0]->getSprite());
 
-      if (ball.x < VL_WINDOW_WIDTH/2) {
-        window->draw(*(players[2]->getSprite()));
-        window->draw(*net);
-        window->draw(*(players[1]->getSprite()));
+      if (ball->getPosition().x < VL_WINDOW_WIDTH/2) {
+        window->draw(ball->getSprite());
+        window->draw(_sceneObjects[2]->getSprite());
+        window->draw(players[1]->getSprite());
       } else {
-        window->draw(*net);
-        window->draw(*(players[1]->getSprite()));
-        window->draw(*(players[2]->getSprite()));
+        window->draw(_sceneObjects[2]->getSprite());
+        window->draw(players[1]->getSprite());
+        window->draw(ball->getSprite());
       }
 
-      window->draw(*tree);
+      window->draw(_sceneObjects[1]->getSprite());
 
       window->display();
     }
@@ -112,22 +97,32 @@ namespace vl {
   Volley::~Volley() {
     for (auto player: players)
       delete player;
+    delete ball;
+    for (auto element: _sceneObjects)
+      delete element;
 
     delete window;
   }
 
   void Volley::resolveCollisions() {
-    players[2]->rotate();
-    players[2]->bounceIfCollide(*players[0]);
-    players[2]->bounceIfCollide(*players[1]);
+    auto angle = (ball->getVelocity().x * 180.0) / (32.0 * 3.14 * 3);
+    ball->rotate(angle);
 
-    const sf::Vector2f p = net->getPosition();
-    const sf::Vector2u s = net->getTexture()->getSize();
+    if (ball->isCollidingWith(*players[0])) {
+      ball->bounce(*players[0]);
+    }
+
+    if (ball->isCollidingWith(*players[1])) {
+      ball->bounce(*players[1]);
+    }
+
+    const sf::Vector2f p = _sceneObjects[2]->getPosition();
+    const sf::Vector2u s = _sceneObjects[2]->getSize();
 
     sf::FloatRect net_box(sf::Vector2f(p.x+s.x/2.0 - 10, p.y+50), sf::Vector2f(20, 300));
 
-    if (net_box.contains(players[2]->getPosition())) {
-      std::cout << "Net hit!\n";
+    if (net_box.contains(ball->getPosition())) {
+      std::cout << "Filet!\n";
     }
   }
 
@@ -136,15 +131,21 @@ namespace vl {
     while(window->isOpen()){
       auto dt = clock.restart().asSeconds();
 
+      resolveCollisions();
+
+      ball->update(dt);
+
       for (auto& player: players)
         player->update(dt);
 
-      resolveCollisions();
 
       for (int i=0; i<VL_NB_PLAYERS; i++) {
         shadows[i]->setPosition(players[i]->getPosition().x, 690);
         shadows[i]->setScale(players[i]->getPosition().y/700, 0.3*players[i]->getPosition().y/700);
       }
+
+      shadows[2]->setPosition(ball->getPosition().x, 690);
+      shadows[2]->setScale(ball->getPosition().y/700, 0.3*ball->getPosition().y/700);
 
       std::this_thread::sleep_for(std::chrono::milliseconds(VL_UPDATE_THREAD_MS));
     }
@@ -163,14 +164,15 @@ namespace vl {
           switch(event.key.code) {
           case sf::Keyboard::Z: players[0]->handleEvent(vl::Event::JUMP); break;
           case sf::Keyboard::I: players[1]->handleEvent(vl::Event::JUMP); break;
-          case sf::Keyboard::G: players[2]->handleEvent(vl::Event::JUMP); break;
-          case sf::Keyboard::V: players[2]->handleEvent(vl::Event::LEFT); break;
-          case sf::Keyboard::B: players[2]->handleEvent(vl::Event::RIGHT); break;
+          case sf::Keyboard::G: ball->handleEvent(vl::Event::JUMP); break;
+          case sf::Keyboard::V: ball->handleEvent(vl::Event::LEFT); break;
+          case sf::Keyboard::B: ball->handleEvent(vl::Event::RIGHT); break;
           case sf::Keyboard::Escape: window->close(); break;
           case sf::Keyboard::Space:
-            for(auto& player: players)
-              player->handleEvent(vl::Event::RESET);
-          break;
+            ball->setPosition(sf::Vector2f(5*VL_WINDOW_WIDTH/8, 0));
+            players[0]->setPosition(sf::Vector2f(VL_WINDOW_WIDTH/4, 0));
+            players[1]->setPosition(sf::Vector2f(3*VL_WINDOW_WIDTH/4, 0));
+            break;
 
           default: break;
           }

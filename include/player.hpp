@@ -29,22 +29,6 @@ SOFTWARE. */
 #include "constants.hpp"
 
 namespace vl {
-
-enum class PlayerState {
-  IDLE,
-  JUMPING,
-  GOING_RIGHT,
-  GOING_LEFT,
-};
-
-enum class Event {
-  JUMP,
-  RESET,
-  RIGHT,
-  LEFT,
-};
-
-
 class Player {
   public:
     Player() = default;
@@ -64,8 +48,6 @@ class Player {
     void setPosition(const sf::Vector2f& p);
     void bounceIfCollide(const Player& anotherPlayer);
     void rotate();
-
-    void setPhysicsAttributes(const sf::Vector2f&, const sf::Vector2f&, const sf::Vector2f&);
 
   private:
     sf::Vector2f position;

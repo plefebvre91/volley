@@ -20,57 +20,48 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE. */
 
-
-#ifndef VOLLEY_HPP
-#define VOLLEY_HPP
-
-#include <SFML/Graphics.hpp>
-#include "constants.hpp"
 #include "entity.hpp"
-#include "character.hpp"
-#include "ball.hpp"
 
 namespace vl {
-  class Volley
-  {
-  public:
-    /**
-     * Constructor
-     */
-    Volley();
+  Entity::Entity(const char* file, const sf::Vector2f& position):
+    _position(position), _velocity(), _acceleration(), _sprite(), _texture(), _friction(VL_DEFAULT_FRICTION) {
+      _texture.loadFromFile(file);
+      _sprite.setTexture(_texture);
+      _sprite.setPosition(position);
+  }
 
-    /**
-     * Constructor
-     */
-    ~Volley();
+  void Entity::update(double dt) {
+    auto size = _texture.getSize();
 
-    /**
-     * Launch application
-     */
-    void run();
+    _velocity.x += _acceleration.x;
+    _velocity.y += _acceleration.y;
 
-    /**
-     * Render sprites
-     */
-    void render();
+    _position.x += _velocity.x;
+    _position.y += _velocity.y;
 
-    /**
-     * Update state
-     */
-    void update();
+    // // A DEPLACER DANS BOUNCE ?
+    if(std::abs(_velocity.x) != 0) _velocity.x *= _friction;
+     if(std::abs(_velocity.x) < 0.01) _velocity.x = 0;
 
+    _acceleration.y = 0;
+    _acceleration.x = 0;
 
-  private:
-    void handleEvents();
-    void resolveCollisions();
-    void resolveGravity(double dt);
-    std::array<vl::Character*, VL_NB_PLAYERS> players;
-    std::array<sf::CircleShape*, 3> shadows;
-    std::array<vl::Entity*, 3> _sceneObjects;
-    vl::Ball* ball;
-    sf::RenderWindow* window;
+    // Is in the air
+    if (_position.y < VL_FLOOR - (size.y/2)) {
+      _velocity.y += VL_GRAVITY*dt;
+    }
 
-  };
+    // Rebound
+    else if(_position.y >  VL_FLOOR - (size.y/2)) {
+      if (_velocity.y > 0.0)
+        _velocity.y *= -VL_BOUND_RESTITUTION;
+      else {
+        _position.y = VL_FLOOR - (size.y/2);
+        _state = vl::State::IDLE;
+      }
+    }
+
+    _sprite.setPosition(_position);
+  }
+
 }
-
-#endif
