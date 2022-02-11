@@ -47,9 +47,10 @@ namespace vl {
     ball = new vl::Ball("ball.png", sf::Vector2f(5*VL_WINDOW_WIDTH/8, 0), VL_BALL_FRICTION);
     players[0] = new vl::Character("player.png", sf::Vector2f(VL_WINDOW_WIDTH/4, 0), VL_PLAYER_FRICTION);
     players[1] = new vl::Character("player2.png", sf::Vector2f(3*VL_WINDOW_WIDTH/4, 0), VL_PLAYER_FRICTION);
-    //players[0]->setPlayableArea(sf::FloatRect(VL_MARGIN, VL_MARGIN, VL_WINDOW_WIDTH/2 - 4*VL_MARGIN, VL_WINDOW_HEIGHT - VL_MARGIN));
-    //players[1]->setPlayableArea(sf::FloatRect(VL_WINDOW_WIDTH/2 + 4*VL_MARGIN, VL_MARGIN, VL_WINDOW_WIDTH/2 - VL_MARGIN, VL_WINDOW_HEIGHT - VL_MARGIN));
-    //players[2]->setPlayableArea(sf::FloatRect(VL_MARGIN, VL_MARGIN, VL_WINDOW_WIDTH - VL_MARGIN, VL_WINDOW_HEIGHT - VL_MARGIN));
+
+    players[0]->setPlayableArea(sf::FloatRect(VL_MARGIN, VL_MARGIN, VL_WINDOW_WIDTH/2 - 4*VL_MARGIN, VL_WINDOW_HEIGHT - VL_MARGIN));
+    players[1]->setPlayableArea(sf::FloatRect(VL_WINDOW_WIDTH/2 + 4*VL_MARGIN, VL_MARGIN, VL_WINDOW_WIDTH/2 - 4*VL_MARGIN, VL_WINDOW_HEIGHT - VL_MARGIN));
+    ball->setPlayableArea(sf::FloatRect(VL_MARGIN, VL_MARGIN, VL_WINDOW_WIDTH - VL_MARGIN, VL_WINDOW_HEIGHT - VL_MARGIN));
 
 
     for (auto& shadow: shadows) {
@@ -105,7 +106,7 @@ namespace vl {
   }
 
   void Volley::resolveCollisions() {
-    auto angle = (ball->getVelocity().x * 180.0) / (32.0 * 3.14 * 3);
+    auto angle = (ball->getVelocity().x * 180.0) / (32.0 * 3.14);
     ball->rotate(angle);
 
     if (ball->isCollidingWith(*players[0])) {

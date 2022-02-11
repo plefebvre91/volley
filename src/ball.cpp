@@ -66,4 +66,16 @@ namespace vl {
       default:  break;
     }
   }
+
+  void Ball::update(float dt) {
+    Entity::update(dt);
+
+    if ((_position.x < VL_MARGIN) || (_position.x > (VL_WINDOW_WIDTH - VL_MARGIN)))
+      _velocity.x *= -1;
+
+    if (_position.y < 0)
+      _velocity.y *= -1;
+
+
+  }
 }

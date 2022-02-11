@@ -33,6 +33,7 @@ namespace vl {
     bool isCollidingWith(const IPhysicalObject& object) const;
     void bounce(const IPhysicalObject& object);
     void handleEvent(vl::Event e);
+    void update(float dt);
   };
 };
 

@@ -58,7 +58,8 @@ namespace vl {
     }
 
     inline void move(const sf::Vector2f& v) {
-      _velocity.x = v.x;
+      if (_area.contains(_position+v))
+        _velocity.x = v.x;
     }
 
     inline void jump(float force) {
@@ -77,6 +78,10 @@ namespace vl {
       return _texture.getSize();
     }
 
+    void setPlayableArea(const sf::FloatRect& area) {
+        _area = area;
+    }
+
 
   protected:
     sf::Vector2f _position;
@@ -84,8 +89,10 @@ namespace vl {
     sf::Vector2f _acceleration;
     sf::Sprite _sprite;
     sf::Texture _texture;
+    sf::FloatRect _area;
     vl::State _state;
     float _friction;
+
   };
 };
 
