@@ -71,6 +71,7 @@ namespace vl {
     void handleEvents();
     void resolveCollisions();
     void resolveGravity(double dt);
+    void reset();
     std::array<vl::Character*, VL_NB_PLAYERS> players;
     std::array<sf::CircleShape*, 3> shadows;
     std::array<vl::Entity*, 3> _sceneObjects;

@@ -62,6 +62,10 @@ namespace vl {
         _velocity.x = v.x;
     }
 
+    inline void stop() {
+      _velocity = sf::Vector2f(0, 0);
+    }
+
     inline void jump(float force) {
       _acceleration += sf::Vector2f(0.0, -force);
     }

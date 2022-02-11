@@ -51,6 +51,7 @@ namespace vl {
     virtual void jump(float force) = 0;
     virtual void reset() = 0;
     virtual void rotate(float angle) = 0;
+    virtual void stop() = 0;
 
     virtual void update(double dt) = 0;
   };

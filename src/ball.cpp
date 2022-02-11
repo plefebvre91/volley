@@ -78,11 +78,25 @@ namespace vl {
   void Ball::update(float dt) {
     Entity::update(dt);
 
-    if ((_position.x < VL_MARGIN) || (_position.x > (VL_WINDOW_WIDTH - VL_MARGIN)))
+    if (_position.x < VL_MARGIN) {
+      _position.x = VL_MARGIN;
       _velocity.x *= -VL_BOUND_RESTITUTION/2;
+    }
 
-    if (_position.y < 0)
+    else if (_position.x > (VL_WINDOW_WIDTH - VL_MARGIN)) {
+      _position.x  = (VL_WINDOW_WIDTH - VL_MARGIN);
+      _velocity.x *= -VL_BOUND_RESTITUTION/2;
+    }
+
+    if (_position.y < 0) {
       _velocity.y *= -VL_BOUND_RESTITUTION/2;
+      _position.y = 1.0f;
+    }
+
+    auto size = getSize();
+    if(_position.y >  VL_FLOOR - (size.y/2) - 5) {
+      notify(*this, vl::Event::BALL_FELL);
+    }
 
 
   }

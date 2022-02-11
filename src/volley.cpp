@@ -44,9 +44,9 @@ namespace vl {
     window->setActive(false);
     window->setFramerateLimit(VL_FPS);
 
-    ball = new vl::Ball("ball.png", sf::Vector2f(5*VL_WINDOW_WIDTH/8, 0), VL_BALL_FRICTION);
-    players[0] = new vl::Character("player.png", sf::Vector2f(VL_WINDOW_WIDTH/4, 0), VL_PLAYER_FRICTION);
-    players[1] = new vl::Character("player2.png", sf::Vector2f(3*VL_WINDOW_WIDTH/4, 0), VL_PLAYER_FRICTION);
+    ball = new vl::Ball("ball.png", sf::Vector2f(5*VL_WINDOW_WIDTH/8, 200), VL_BALL_FRICTION);
+    players[0] = new vl::Character("player.png", sf::Vector2f(VL_WINDOW_WIDTH/4, 660), VL_PLAYER_FRICTION);
+    players[1] = new vl::Character("player2.png", sf::Vector2f(3*VL_WINDOW_WIDTH/4, 600), VL_PLAYER_FRICTION);
 
     _score = new Score();
     _scores[0] = 0;
@@ -133,11 +133,20 @@ namespace vl {
     if (net_box.contains(ball->getPosition())) {
       _scores[1-_lastPlayer]++;
       _score->update(_scores[0], _scores[1]);
+      reset();
 
-      ball->setPosition(sf::Vector2f(5*VL_WINDOW_WIDTH/8, 0));
-      players[0]->setPosition(sf::Vector2f(VL_WINDOW_WIDTH/4, 0));
-      players[1]->setPosition(sf::Vector2f(3*VL_WINDOW_WIDTH/4, 0));
     }
+  }
+
+  void Volley::reset() {
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    ball->setPosition(sf::Vector2f(5*VL_WINDOW_WIDTH/8, 0));
+    players[0]->setPosition(sf::Vector2f(VL_WINDOW_WIDTH/4, 600));
+    players[1]->setPosition(sf::Vector2f(3*VL_WINDOW_WIDTH/4, 600));
+
+    ball->stop();
+    players[0]->stop();
+    players[1]->stop();
   }
 
   void Volley::update() {
@@ -215,9 +224,19 @@ namespace vl {
 
  void Volley::onNotify(const Entity& entity, vl::Event event) {
    switch (event) {
-     case vl::Event::BALL_IN_NET:
-     break;
-     default:
+     case vl::Event::BALL_FELL:
+      auto& p = ball->getPosition();
+
+      if (p.x < VL_WINDOW_WIDTH/2 && _lastPlayer == 0)
+        _scores[1]++;
+      else if (p.x < VL_WINDOW_WIDTH/2 && _lastPlayer == 1)
+        _scores[1]++;
+      else if (p.x > VL_WINDOW_WIDTH/2 && _lastPlayer == 0)
+        _scores[0]++;
+      else
+        _scores[0]++;
+      _score->update(_scores[0], _scores[1]);
+      reset();
      break;
    }
  }
