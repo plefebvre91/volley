@@ -20,67 +20,22 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE. */
 
+#ifndef VL_SCORE_HPP
+#define VL_SCORE_HPP
 
-#ifndef VOLLEY_HPP
-#define VOLLEY_HPP
-
-#include <SFML/Graphics.hpp>
-#include "constants.hpp"
 #include "entity.hpp"
-#include "character.hpp"
-#include "ball.hpp"
-#include "observer.hpp"
-#include "score.hpp"
 
 namespace vl {
-  class Volley: public IObserver
-  {
+  class Score {
   public:
-    /**
-     * Constructor
-     */
-    Volley();
-
-    /**
-     * Constructor
-     */
-    ~Volley();
-
-    /**
-     * Launch application
-     */
-    void run();
-
-    /**
-     * Render sprites
-     */
-    void render();
-
-    /**
-     * Update state
-     */
-    void update();
-
-    /**
-     * Event notification handler
-     */
-    void onNotify(const Entity& entity, vl::Event event);
-
+    Score();
+    const sf::Drawable& getSprite() const;
+    void update(unsigned int s1, unsigned int s2);
 
   private:
-    void handleEvents();
-    void resolveCollisions();
-    void resolveGravity(double dt);
-    std::array<vl::Character*, VL_NB_PLAYERS> players;
-    std::array<sf::CircleShape*, 3> shadows;
-    std::array<vl::Entity*, 3> _sceneObjects;
-    vl::Ball* ball;
-    sf::RenderWindow* window;
-    unsigned int _lastPlayer;
-    unsigned int _scores[2];
-    Score* _score;
-
+    sf::Font _font;
+    sf::Text _text;
   };
-}
+};
 
 #endif

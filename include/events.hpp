@@ -30,6 +30,10 @@ namespace vl {
     RESET,
     RIGHT,
     LEFT,
+
+    BALL_FELL,
+    BALL_IN_NET,
+    
   };
 }
 

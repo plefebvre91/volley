@@ -20,66 +20,15 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE. */
 
+#ifndef VL_OBSERVER_HPP
+#define VL_OBSERVER_HPP
 
-#ifndef VOLLEY_HPP
-#define VOLLEY_HPP
-
-#include <SFML/Graphics.hpp>
-#include "constants.hpp"
 #include "entity.hpp"
-#include "character.hpp"
-#include "ball.hpp"
-#include "observer.hpp"
-#include "score.hpp"
 
 namespace vl {
-  class Volley: public IObserver
-  {
-  public:
-    /**
-     * Constructor
-     */
-    Volley();
-
-    /**
-     * Constructor
-     */
-    ~Volley();
-
-    /**
-     * Launch application
-     */
-    void run();
-
-    /**
-     * Render sprites
-     */
-    void render();
-
-    /**
-     * Update state
-     */
-    void update();
-
-    /**
-     * Event notification handler
-     */
-    void onNotify(const Entity& entity, vl::Event event);
-
-
-  private:
-    void handleEvents();
-    void resolveCollisions();
-    void resolveGravity(double dt);
-    std::array<vl::Character*, VL_NB_PLAYERS> players;
-    std::array<sf::CircleShape*, 3> shadows;
-    std::array<vl::Entity*, 3> _sceneObjects;
-    vl::Ball* ball;
-    sf::RenderWindow* window;
-    unsigned int _lastPlayer;
-    unsigned int _scores[2];
-    Score* _score;
-
+  struct IObserver {
+    virtual ~IObserver() {}
+    virtual void onNotify(const Entity& entity, Event event) = 0;
   };
 }
 

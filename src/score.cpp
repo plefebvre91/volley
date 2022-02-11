@@ -20,67 +20,35 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE. */
 
-
-#ifndef VOLLEY_HPP
-#define VOLLEY_HPP
-
-#include <SFML/Graphics.hpp>
-#include "constants.hpp"
-#include "entity.hpp"
-#include "character.hpp"
-#include "ball.hpp"
-#include "observer.hpp"
+#include <iostream>
 #include "score.hpp"
-
+#include "constants.hpp"
+#include <sstream>
 namespace vl {
-  class Volley: public IObserver
-  {
-  public:
-    /**
-     * Constructor
-     */
-    Volley();
+  Score::Score():_font(), _text() {
+    if (!_font.loadFromFile("arial.ttf")) {
+      std::cerr << "Fail to load font :(\n";
+    }
 
-    /**
-     * Constructor
-     */
-    ~Volley();
+    _text.setFont(_font);
+    _text.setString("0 - 0");
+    _text.setCharacterSize(36);
+    _text.setFillColor(sf::Color::White);
 
-    /**
-     * Launch application
-     */
-    void run();
+    auto size = _text.getLocalBounds().width;
+    _text.setPosition(sf::Vector2f((VL_WINDOW_WIDTH-size)/2, 100));
+    //_ text.setStyle(sf::Text::Bold | sf::Text::Underlined);
+  }
 
-    /**
-     * Render sprites
-     */
-    void render();
+  const sf::Drawable& Score::getSprite() const {
+    return _text;
+  }
 
-    /**
-     * Update state
-     */
-    void update();
-
-    /**
-     * Event notification handler
-     */
-    void onNotify(const Entity& entity, vl::Event event);
-
-
-  private:
-    void handleEvents();
-    void resolveCollisions();
-    void resolveGravity(double dt);
-    std::array<vl::Character*, VL_NB_PLAYERS> players;
-    std::array<sf::CircleShape*, 3> shadows;
-    std::array<vl::Entity*, 3> _sceneObjects;
-    vl::Ball* ball;
-    sf::RenderWindow* window;
-    unsigned int _lastPlayer;
-    unsigned int _scores[2];
-    Score* _score;
-
-  };
-}
-
-#endif
+  void Score::update(unsigned int s1, unsigned int s2) {
+    std::ostringstream stream;
+    stream << s1 << " - " << s2;
+    _text.setString(stream.str().c_str());
+    auto size = _text.getLocalBounds().width;
+    _text.setPosition(sf::Vector2f((VL_WINDOW_WIDTH-size)/2, 100));
+  }
+};

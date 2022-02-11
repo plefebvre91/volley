@@ -41,6 +41,14 @@ namespace vl {
     _acceleration.y = std::min<float>(10*v.y, 2.0);
   }
 
+  void Ball::setObserver(IObserver* observer) {
+    _observer = observer;
+  }
+
+  void Ball::notify(const Entity& entity, Event event) {
+    _observer->onNotify(entity, event);
+  }
+
   void Ball::handleEvent(vl::Event e) {
     switch (e) {
       case Event::RESET:
@@ -71,10 +79,10 @@ namespace vl {
     Entity::update(dt);
 
     if ((_position.x < VL_MARGIN) || (_position.x > (VL_WINDOW_WIDTH - VL_MARGIN)))
-      _velocity.x *= -1;
+      _velocity.x *= -VL_BOUND_RESTITUTION/2;
 
     if (_position.y < 0)
-      _velocity.y *= -1;
+      _velocity.y *= -VL_BOUND_RESTITUTION/2;
 
 
   }

@@ -48,10 +48,15 @@ namespace vl {
     players[0] = new vl::Character("player.png", sf::Vector2f(VL_WINDOW_WIDTH/4, 0), VL_PLAYER_FRICTION);
     players[1] = new vl::Character("player2.png", sf::Vector2f(3*VL_WINDOW_WIDTH/4, 0), VL_PLAYER_FRICTION);
 
+    _score = new Score();
+    _scores[0] = 0;
+    _scores[1] = 0;
+
+    _lastPlayer = 0;
     players[0]->setPlayableArea(sf::FloatRect(VL_MARGIN, VL_MARGIN, VL_WINDOW_WIDTH/2 - 4*VL_MARGIN, VL_WINDOW_HEIGHT - VL_MARGIN));
     players[1]->setPlayableArea(sf::FloatRect(VL_WINDOW_WIDTH/2 + 4*VL_MARGIN, VL_MARGIN, VL_WINDOW_WIDTH/2 - 4*VL_MARGIN, VL_WINDOW_HEIGHT - VL_MARGIN));
     ball->setPlayableArea(sf::FloatRect(VL_MARGIN, VL_MARGIN, VL_WINDOW_WIDTH - VL_MARGIN, VL_WINDOW_HEIGHT - VL_MARGIN));
-
+    ball->setObserver(this);
 
     for (auto& shadow: shadows) {
       shadow = new sf::CircleShape(VL_SHADOW_WIDTH/2, 10);
@@ -91,6 +96,7 @@ namespace vl {
 
       window->draw(_sceneObjects[1]->getSprite());
 
+      window->draw(_score->getSprite());
       window->display();
     }
   }
@@ -111,10 +117,12 @@ namespace vl {
 
     if (ball->isCollidingWith(*players[0])) {
       ball->bounce(*players[0]);
+      _lastPlayer = 0;
     }
 
     if (ball->isCollidingWith(*players[1])) {
       ball->bounce(*players[1]);
+      _lastPlayer = 1;
     }
 
     const sf::Vector2f p = _sceneObjects[2]->getPosition();
@@ -123,7 +131,12 @@ namespace vl {
     sf::FloatRect net_box(sf::Vector2f(p.x+s.x/2.0 - 10, p.y+50), sf::Vector2f(20, 300));
 
     if (net_box.contains(ball->getPosition())) {
-      std::cout << "Filet!\n";
+      _scores[1-_lastPlayer]++;
+      _score->update(_scores[0], _scores[1]);
+
+      ball->setPosition(sf::Vector2f(5*VL_WINDOW_WIDTH/8, 0));
+      players[0]->setPosition(sf::Vector2f(VL_WINDOW_WIDTH/4, 0));
+      players[1]->setPosition(sf::Vector2f(3*VL_WINDOW_WIDTH/4, 0));
     }
   }
 
@@ -198,6 +211,16 @@ namespace vl {
       std::this_thread::sleep_for(std::chrono::milliseconds(VL_EVENT_THREAD_MS));
     }
   }
+
+
+ void Volley::onNotify(const Entity& entity, vl::Event event) {
+   switch (event) {
+     case vl::Event::BALL_IN_NET:
+     break;
+     default:
+     break;
+   }
+ }
 
   void Volley::run()
   {

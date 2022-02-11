@@ -25,15 +25,21 @@ SOFTWARE. */
 
 #include "interfaces.hpp"
 #include "entity.hpp"
+#include "observer.hpp"
 
 namespace vl {
   class Ball: public Entity,  public ISolidObject, public ISoftObject, public IControllableObject {
   public:
     Ball(const char* file, const sf::Vector2f& position, float friction);
+    void setObserver(IObserver* observer);
+    void notify(const Entity& entity, Event event);
     bool isCollidingWith(const IPhysicalObject& object) const;
     void bounce(const IPhysicalObject& object);
     void handleEvent(vl::Event e);
     void update(float dt);
+
+  private:
+    IObserver* _observer;
   };
 };
 
