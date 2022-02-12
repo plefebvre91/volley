@@ -23,6 +23,7 @@ SOFTWARE. */
 #include <SFML/Graphics.hpp>
 #include "ball.hpp"
 #include "utils.hpp"
+#include "constants.hpp"
 
 namespace vl {
   Ball::Ball(const char* file, const sf::Vector2f& position,  float friction):

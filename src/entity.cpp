@@ -21,6 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE. */
 
 #include "entity.hpp"
+#include "constants.hpp"
 
 namespace vl {
   Entity::Entity(const char* file, const sf::Vector2f& position):

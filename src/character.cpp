@@ -21,6 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE. */
 
 #include "character.hpp"
+#include "constants.hpp"
 
 namespace vl {
   Character::Character(const char* file, const sf::Vector2f& position, float friction)
