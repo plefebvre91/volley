@@ -46,12 +46,12 @@ namespace vl {
 
       case Event::RIGHT:
         _state = vl::State::GOING_RIGHT;
-        move(sf::Vector2f(VL_MOVE_STEP, 0.0));
+        move(sf::Vector2f(VL_MOVE_STEP, 0.0f));
       break;
 
       case Event::LEFT:
         _state = vl::State::GOING_LEFT;
-        move(sf::Vector2f(-VL_MOVE_STEP, 0.0));
+        move(sf::Vector2f(-VL_MOVE_STEP, 0.0f));
       break;
 
       default:  break;

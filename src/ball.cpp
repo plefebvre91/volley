@@ -33,13 +33,13 @@ namespace vl {
   }
 
   bool Ball::isCollidingWith(const IPhysicalObject& object) const {
-    return vl::utils::sd(object.getPosition()-sf::Vector2f(0,65), _position) < VL_DIST_BEFORE_COLLISION;
+    return vl::utils::sd(object.getPosition()-sf::Vector2f(0.0f, 65.0f), _position) < VL_DIST_BEFORE_COLLISION;
   }
 
   void Ball::bounce(const IPhysicalObject& object) {
-    const sf::Vector2f& v = vl::utils::nv(_position, (object.getPosition()-sf::Vector2f(0,65))) ;
-    _acceleration.x = std::min<float>(10*v.x, 2.0);
-    _acceleration.y = std::min<float>(10*v.y, 2.0);
+    const sf::Vector2f& v = vl::utils::nv(_position, (object.getPosition()-sf::Vector2f(0.0 ,65.0f))) ;
+    _acceleration.x = std::min<float>(10.0f*v.x, 2.0f);
+    _acceleration.y = std::min<float>(10.0f*v.y, 2.0f);
   }
 
   void Ball::setObserver(IObserver* observer) {
@@ -65,11 +65,11 @@ namespace vl {
       break;
 
       case Event::RIGHT:
-        move(sf::Vector2f(VL_MOVE_STEP, 0.0));
+        move(sf::Vector2f(VL_MOVE_STEP, 0.0f));
       break;
 
       case Event::LEFT:
-        move(sf::Vector2f(-VL_MOVE_STEP, 0.0));
+        move(sf::Vector2f(-VL_MOVE_STEP, 0.0f));
       break;
 
       default:  break;
@@ -81,21 +81,21 @@ namespace vl {
 
     if (_position.x < VL_MARGIN) {
       _position.x = VL_MARGIN;
-      _velocity.x *= -VL_BOUND_RESTITUTION/2;
+      _velocity.x *= -VL_BOUND_RESTITUTION/2.0f;
     }
 
     else if (_position.x > (VL_WINDOW_WIDTH - VL_MARGIN)) {
       _position.x  = (VL_WINDOW_WIDTH - VL_MARGIN);
-      _velocity.x *= -VL_BOUND_RESTITUTION/2;
+      _velocity.x *= -VL_BOUND_RESTITUTION/2.0f;
     }
 
     if (_position.y < 0) {
-      _velocity.y *= -VL_BOUND_RESTITUTION/2;
+      _velocity.y *= -VL_BOUND_RESTITUTION/2.0f;
       _position.y = 1.0f;
     }
 
     auto size = getSize();
-    if(_position.y >  VL_FLOOR - (size.y/2) - 5) {
+    if(_position.y >  VL_FLOOR - (size.y/2.0f) - 5.0f) {
       notify(*this, vl::Event::BALL_FELL);
     }
 

@@ -41,11 +41,11 @@ namespace vl {
     _position.y += _velocity.y;
 
     // // A DEPLACER DANS BOUNCE ?
-    if(std::abs(_velocity.x) != 0) _velocity.x *= _friction;
-     if(std::abs(_velocity.x) < 0.01) _velocity.x = 0;
+    if(std::abs(_velocity.x) != 0.0f) _velocity.x *= _friction;
+     if(std::abs(_velocity.x) < 0.01f) _velocity.x = 0.0f;
 
-    _acceleration.y = 0;
-    _acceleration.x = 0;
+    _acceleration.y = 0.0f;
+    _acceleration.x = 0.0f;
 
     // Is in the air
     if (_position.y < VL_FLOOR - (size.y/2)) {
@@ -54,14 +54,13 @@ namespace vl {
 
     // Rebound
     else if(_position.y >  VL_FLOOR - (size.y/2)) {
-      if (_velocity.y > 0.0)
+      if (_velocity.y > 0.0f)
         _velocity.y *= -VL_BOUND_RESTITUTION;
       else {
         _position.y = VL_FLOOR - (size.y/2);
         _state = vl::State::IDLE;
       }
     }
-
     _sprite.setPosition(_position);
   }
 

@@ -49,25 +49,25 @@ namespace vl {
     players[1] = new vl::Character("player2.png", sf::Vector2f(3*VL_WINDOW_WIDTH/4, 600), VL_PLAYER_FRICTION);
 
     _score = new Score();
-    _scores[0] = 0;
-    _scores[1] = 0;
+    _scores[0] = 0u;
+    _scores[1] = 0u;
 
-    _lastPlayer = 0;
+    _lastPlayer = 0u;
     players[0]->setPlayableArea(sf::FloatRect(VL_MARGIN, VL_MARGIN, VL_WINDOW_WIDTH/2 - 4*VL_MARGIN, VL_WINDOW_HEIGHT - VL_MARGIN));
     players[1]->setPlayableArea(sf::FloatRect(VL_WINDOW_WIDTH/2 + 4*VL_MARGIN, VL_MARGIN, VL_WINDOW_WIDTH/2 - 4*VL_MARGIN, VL_WINDOW_HEIGHT - VL_MARGIN));
     ball->setPlayableArea(sf::FloatRect(VL_MARGIN, VL_MARGIN, VL_WINDOW_WIDTH - VL_MARGIN, VL_WINDOW_HEIGHT - VL_MARGIN));
     ball->setObserver(this);
 
     for (auto& shadow: shadows) {
-      shadow = new sf::CircleShape(VL_SHADOW_WIDTH/2, 10);
-      shadow->setFillColor(sf::Color(200,200,200));
-      shadow->setOrigin(VL_SHADOW_WIDTH/2, 0);
-      shadow->setScale(1.0,0.3);
+      shadow = new sf::CircleShape(VL_SHADOW_WIDTH/2, 10u);
+      shadow->setFillColor(sf::Color(200u,200u,200u));
+      shadow->setOrigin(VL_SHADOW_WIDTH/2, 0u);
+      shadow->setScale(1.0f, 0.3f);
     }
 
-    _sceneObjects[0] = new Entity("beach.png", sf::Vector2f(0,0));
-    _sceneObjects[1] = new Entity("tree.png", sf::Vector2f(80, 250));
-    _sceneObjects[2] = new Entity("net.png", sf::Vector2f(450,415));
+    _sceneObjects[0] = new Entity("beach.png", sf::Vector2f(0.0f, 0.0f));
+    _sceneObjects[1] = new Entity("tree.png", sf::Vector2f(80.0f, 250.0f));
+    _sceneObjects[2] = new Entity("net.png", sf::Vector2f(450.0f, 415.0f));
   }
 
   void Volley::render() {
@@ -112,23 +112,23 @@ namespace vl {
   }
 
   void Volley::resolveCollisions() {
-    auto angle = (ball->getVelocity().x * 180.0) / (32.0 * 3.14);
+    auto angle = (ball->getVelocity().x * 180.0f) / (32.0f * 3.14f);
     ball->rotate(angle);
 
     if (ball->isCollidingWith(*players[0])) {
       ball->bounce(*players[0]);
-      _lastPlayer = 0;
+      _lastPlayer = 0u;
     }
 
     if (ball->isCollidingWith(*players[1])) {
       ball->bounce(*players[1]);
-      _lastPlayer = 1;
+      _lastPlayer = 1u;
     }
 
     const sf::Vector2f p = _sceneObjects[2]->getPosition();
     const sf::Vector2u s = _sceneObjects[2]->getSize();
 
-    sf::FloatRect net_box(sf::Vector2f(p.x+s.x/2.0 - 10, p.y+50), sf::Vector2f(20, 300));
+    sf::FloatRect net_box(sf::Vector2f(p.x+s.x/2.0f - 10.0f, p.y+50.0f), sf::Vector2f(20.0f, 300.0f));
 
     if (net_box.contains(ball->getPosition())) {
       _scores[1-_lastPlayer]++;
@@ -139,7 +139,7 @@ namespace vl {
   }
 
   void Volley::reset() {
-    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000u));
     ball->setPosition(sf::Vector2f(5*VL_WINDOW_WIDTH/8, 0));
     players[0]->setPosition(sf::Vector2f(VL_WINDOW_WIDTH/4, 600));
     players[1]->setPosition(sf::Vector2f(3*VL_WINDOW_WIDTH/4, 600));
@@ -227,11 +227,11 @@ namespace vl {
      case vl::Event::BALL_FELL:
       auto& p = ball->getPosition();
 
-      if (p.x < VL_WINDOW_WIDTH/2 && _lastPlayer == 0)
+      if (p.x < VL_WINDOW_WIDTH/2 && _lastPlayer == 0u)
         _scores[1]++;
-      else if (p.x < VL_WINDOW_WIDTH/2 && _lastPlayer == 1)
+      else if (p.x < VL_WINDOW_WIDTH/2 && _lastPlayer == 1u)
         _scores[1]++;
-      else if (p.x > VL_WINDOW_WIDTH/2 && _lastPlayer == 0)
+      else if (p.x > VL_WINDOW_WIDTH/2 && _lastPlayer == 0u)
         _scores[0]++;
       else
         _scores[0]++;
