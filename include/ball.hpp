@@ -30,12 +30,49 @@ SOFTWARE. */
 namespace vl {
   class Ball: public Entity,  public ISolidObject, public ISoftObject, public IControllableObject {
   public:
+    /**
+     * Constructor
+     * @param image file
+     * @param intial position
+     */
     Ball(const char* file, const sf::Vector2f& position, float friction);
+
+    /**
+     * Add an observer
+     * @param a observer object
+     */
     void setObserver(IObserver* observer);
+
+    /**
+     * Notify an event to the observer
+     * @param an object
+     * @param an event
+     */
     void notify(const Entity& entity, Event event);
+
+    /**
+     * ISolidObject interface implementation
+     * @param another object
+     * @return true is the 2 objects are collinding
+     */
     bool isCollidingWith(const IPhysicalObject& object) const;
+
+    /**
+     * ISoftObject interface implementation
+     * @param another object
+     */
     void bounce(const IPhysicalObject& object);
+
+    /**
+     * Event handler
+     * @param an event
+     */
     void handleEvent(vl::Event e);
+
+    /**
+     * Upadte object at each frame
+     * @param time since last update
+     */
     void update(float dt);
 
   private:

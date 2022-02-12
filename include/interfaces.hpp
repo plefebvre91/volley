@@ -28,42 +28,104 @@ SOFTWARE. */
 #include "events.hpp"
 
 namespace vl {
+  /**
+   * Base interface for a simple object with a position
+   */
   struct IPhysicalObject {
-    IPhysicalObject() = default;
-    virtual ~IPhysicalObject() = default;
+    /**
+     * Getter for position
+     * @return object's position
+     */
     virtual const sf::Vector2f& getPosition() const = 0;
+
+    /**
+     * Setter for position
+     * @param new position
+     */
     virtual void setPosition(const sf::Vector2f& p) = 0;
   };
 
+  /**
+   * Base interface for a collidable object
+   */
   struct ISolidObject {
-    ISolidObject() = default;
-    virtual ~ISolidObject() = default;
+    /**
+     * Setter for position
+     * @param another object
+     * @return true if the 2 objects are colliding
+     */
     virtual bool isCollidingWith(const IPhysicalObject& object) const = 0;
   };
 
+  /**
+   * Base interface for a dynamic object
+   */
   struct IDynamicObject {
-    IDynamicObject() = default;
-    virtual ~IDynamicObject() = default;
+    /**
+     * Getter for velocity
+     * @return object's velocity
+     */
     virtual const sf::Vector2f& getVelocity() const = 0;
+
+    /**
+     * Getter for acceleration
+     * @return object's acceleration
+     */
     virtual const sf::Vector2f& getAcceleration() const = 0;
 
+    /**
+     * Move the object
+     * @param velocity
+     */
     virtual void move(const sf::Vector2f& v) = 0;
+
+    /**
+     * Make a jump
+     * @param vertical force
+     */
     virtual void jump(float force) = 0;
+
+    /**
+     * Reset object
+     */
     virtual void reset() = 0;
+
+    /**
+     * Rotate object
+     * @param rotation angle
+     */
     virtual void rotate(float angle) = 0;
+
+    /**
+     * Make the object immobile
+     */
     virtual void stop() = 0;
 
+    /**
+     * Update object attributes
+     * @param time since last update
+     */
     virtual void update(double dt) = 0;
   };
 
+  /**
+   * Base interface for a controllable object
+   */
   struct IControllableObject {
-    IControllableObject() = default;
+    /**
+     * Events handler
+     */
     virtual void handleEvent(vl::Event) = 0;
   };
 
+  /**
+   * Base interface for a collidable object
+   */
   struct ISoftObject {
-    ISoftObject() = default;
-    virtual ~ISoftObject() = default;
+    /**
+     * Make a bounce
+     * @param other object which impulsed the bounce
+     */
     virtual void bounce(const IPhysicalObject& object) = 0;
   };
 }

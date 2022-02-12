@@ -26,8 +26,15 @@ SOFTWARE. */
 #include "entity.hpp"
 
 namespace vl {
+  /**
+   * Base interface for an observer pattern
+   */
   struct IObserver {
-    virtual ~IObserver() {}
+    /**
+     * Notify an event
+     * @param target object
+     * @param event type
+     */
     virtual void onNotify(const Entity& entity, Event event) = 0;
   };
 }

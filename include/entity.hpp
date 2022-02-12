@@ -26,66 +26,117 @@ SOFTWARE. */
 
 #include "interfaces.hpp"
 #include "states.hpp"
-#include "constants.hpp"
 
 namespace vl {
   class Entity: public IPhysicalObject, public IDynamicObject {
   public:
-    Entity() = default;
+    /**
+     * Constructor
+     * @param image file
+     * @param intial position
+     */
     Entity(const char* file, const sf::Vector2f& position);
-    ~Entity() = default;
 
+    /**
+     * Upadte object at each frame
+     * @param time since last update
+     */
     void update(double dt);
 
+    /**
+     * IPhysicalObject interface implementation
+     * @return object position
+     */
     inline const sf::Vector2f& getPosition() const {
       return _position;
     }
 
+    /**
+     * IPhysicalObject interface implementation
+     * @param new position
+     */
     inline void setPosition(const sf::Vector2f& position) {
       _position = position;
     }
 
+    /**
+     * Sprite getter
+     * @param object's sprite
+     */
     inline const sf::Sprite& getSprite() const {
       return _sprite;
     }
 
+    /**
+     * IDynamicObject interface implementation
+     * @return object velocity
+     */
     inline const sf::Vector2f& getVelocity() const {
       return _velocity;
     }
 
+    /**
+     * IDynamicObject interface implementation
+     * @return object acceleration
+     */
     inline const sf::Vector2f& getAcceleration() const {
       return _acceleration;
     }
 
+    /**
+     * IDynamicObject interface implementation
+     * @param velocity
+     */
     inline void move(const sf::Vector2f& v) {
       if (_area.contains(_position+v))
         _velocity.x = v.x;
     }
 
+    /**
+     * IDynamicObject interface implementation
+     */
     inline void stop() {
       _velocity = sf::Vector2f(0, 0);
     }
 
+    /**
+     * IDynamicObject interface implementation
+     * @param vertical force
+     */
     inline void jump(float force) {
       _acceleration += sf::Vector2f(0.0, -force);
     }
 
+    /**
+     * Reset object position
+     */
     inline void reset() {
       _position = sf::Vector2f(0, 0);
     }
 
+    /**
+     * IDynamicObject interface implementation
+     * @param rotation angle
+     */
     inline void rotate(float angle) {
       _sprite.rotate(angle);
     }
 
+    /**
+     * Image size getter
+     * @return sprite size
+     */
     inline const sf::Vector2u getSize() const {
       return _texture.getSize();
     }
 
+    /**
+     * Define external bounds for the object
+     * @param bounds coords
+     */
     void setPlayableArea(const sf::FloatRect& area) {
         _area = area;
     }
-
 
   protected:
     sf::Vector2f _position;
@@ -96,7 +147,6 @@ namespace vl {
     sf::FloatRect _area;
     vl::State _state;
     float _friction;
-
   };
 };
 

@@ -28,8 +28,19 @@ SOFTWARE. */
 
 namespace vl {
   namespace utils {
+    /**
+     * Compute square distance between 2 points
+     */
     float sd(const sf::Vector2f& a, const sf::Vector2f& b);
+
+    /**
+     * Compute vector coords from 2 points
+     */
     sf::Vector2f v(const sf::Vector2f& a, const sf::Vector2f& b);
+
+    /**
+     * Compute normalized vector coords from 2 points
+     */
     sf::Vector2f nv(const sf::Vector2f& a, const sf::Vector2f& b);
   }
 }

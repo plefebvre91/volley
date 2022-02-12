@@ -23,16 +23,24 @@ SOFTWARE. */
 #ifndef VL_CHARACTER_HPP
 #define VL_CHARACTER_HPP
 
-#include "constants.hpp"
 #include "interfaces.hpp"
 #include "entity.hpp"
 #include "events.hpp"
-#include "states.hpp"
 
 namespace vl {
   class Character: public Entity, public IControllableObject {
   public:
+    /**
+     * Constructor
+     * @param image file
+     * @param intial position
+     */
     Character(const char* file, const sf::Vector2f& position, float friction);
+
+    /**
+     * Event handler
+     * @param an event
+     */
     void handleEvent(vl::Event);
   };
 };

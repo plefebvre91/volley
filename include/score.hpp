@@ -28,8 +28,20 @@ SOFTWARE. */
 namespace vl {
   class Score {
   public:
+    /**
+     * Constructor
+     */
     Score();
+
+    /**
+     * Text getter
+     * @return the image built from the text
+     */
     const sf::Drawable& getSprite() const;
+
+    /**
+     * Update text
+     */
     void update(unsigned int s1, unsigned int s2);
 
   private:

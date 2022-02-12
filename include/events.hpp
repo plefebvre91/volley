@@ -26,14 +26,15 @@ SOFTWARE. */
 
 namespace vl {
   enum class Event {
+    // Commands
     JUMP,
     RESET,
     RIGHT,
     LEFT,
 
+    // Dynamic events
     BALL_FELL,
     BALL_IN_NET,
-    
   };
 }
 
