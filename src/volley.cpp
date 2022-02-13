@@ -23,6 +23,7 @@ SOFTWARE. */
 #include "volley.hpp"
 #include "constants.hpp"
 #include "utils.hpp"
+#include "assets.hpp"
 #include <X11/Xlib.h>
 #include <thread>
 #include <iostream>
@@ -44,9 +45,9 @@ namespace vl {
     window->setActive(false);
     window->setFramerateLimit(VL_FPS);
 
-    ball = new vl::Ball("ball.png", sf::Vector2f(5*VL_WINDOW_WIDTH/8, 200), VL_BALL_FRICTION);
-    players[0] = new vl::Character("player.png", sf::Vector2f(VL_WINDOW_WIDTH/4, 660), VL_PLAYER_FRICTION);
-    players[1] = new vl::Character("player2.png", sf::Vector2f(3*VL_WINDOW_WIDTH/4, 600), VL_PLAYER_FRICTION);
+    ball = new vl::Ball(VL_ASSET_BALL, sf::Vector2f(5*VL_WINDOW_WIDTH/8, 200), VL_BALL_FRICTION);
+    players[0] = new vl::Character(VL_ASSET_PLAYER1, sf::Vector2f(VL_WINDOW_WIDTH/4, 660), VL_PLAYER_FRICTION);
+    players[1] = new vl::Character(VL_ASSET_PLAYER2, sf::Vector2f(3*VL_WINDOW_WIDTH/4, 600), VL_PLAYER_FRICTION);
 
     _score = new Score();
     _scores[0] = 0u;
@@ -65,9 +66,9 @@ namespace vl {
       shadow->setScale(1.0f, 0.3f);
     }
 
-    _sceneObjects[0] = new Entity("beach.png", sf::Vector2f(0.0f, 0.0f));
-    _sceneObjects[1] = new Entity("tree.png", sf::Vector2f(80.0f, 250.0f));
-    _sceneObjects[2] = new Entity("net.png", sf::Vector2f(450.0f, 415.0f));
+    _sceneObjects[0] = new Entity(VL_ASSET_BEACH, sf::Vector2f(0.0f, 0.0f));
+    _sceneObjects[1] = new Entity(VL_ASSET_TREE, sf::Vector2f(80.0f, 250.0f));
+    _sceneObjects[2] = new Entity(VL_ASSET_NET, sf::Vector2f(450.0f, 415.0f));
   }
 
   void Volley::render() {
