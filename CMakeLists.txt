@@ -21,4 +21,11 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 link_libraries(sfml-graphics sfml-window sfml-system sfml-audio pthread X11)
 
+
 add_executable(volley ${SRC_FILES})
+
+
+add_custom_command(TARGET volley POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${PROJECT_SOURCE_DIR}/resources/"
+      $<TARGET_FILE_DIR:volley>)
