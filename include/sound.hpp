@@ -20,70 +20,25 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE. */
 
+#ifndef VL_SOUND_HPP
+#define VL_SOUND_HPP
 
-#ifndef VOLLEY_HPP
-#define VOLLEY_HPP
-
-#include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
-#include "constants.hpp"
-#include "entity.hpp"
-#include "character.hpp"
-#include "ball.hpp"
-#include "observer.hpp"
-#include "score.hpp"
-#include "sound.hpp"
 
 namespace vl {
-  class Volley: public IObserver
-  {
+  class Sound {
   public:
     /**
      * Constructor
+     * @param image file
+     * @param intial position
      */
-    Volley();
-
-    /**
-     * Constructor
-     */
-    ~Volley();
-
-    /**
-     * Launch application
-     */
-    void run();
-
-    /**
-     * Render sprites
-     */
-    void render();
-
-    /**
-     * Update state
-     */
-    void update();
-
-    /**
-     * Event notification handler
-     */
-    void onNotify(const vl::Event& event);
-
-
+    Sound(const char* file);
+    void play();
   private:
-    void handleEvents();
-    void resolveCollisions();
-    void resolveGravity(double dt);
-    void reset();
-    std::array<vl::Character*, VL_NB_PLAYERS> _players;
-    std::array<sf::CircleShape*, VL_NB_SHADOWS> _shadows;
-    std::array<vl::Entity*, VL_NB_NP_ENTITIES> _sceneObjects;
-    std::array<vl::Sound*, VL_NB_SOUNDS> _sounds;
-    vl::Ball* _ball;
-    sf::RenderWindow* _window;
-    unsigned int _lastPlayer;
-    unsigned int _scores[2];
-    Score* _score;
+    sf::Sound _sound;
+    sf::SoundBuffer _buffer;
   };
-}
+};
 
 #endif

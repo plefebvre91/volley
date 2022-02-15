@@ -20,19 +20,16 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE. */
 
-#ifndef VL_ASSETS_HPP
-#define VL_ASSETS_HPP
+#include "sound.hpp"
 
-#define VL_ASSETS_IMG        "img/"
-#define VL_ASSET_IMG_BALL    VL_ASSETS_IMG "ball.png"
-#define VL_ASSET_IMG_PLAYER1 VL_ASSETS_IMG "player.png"
-#define VL_ASSET_IMG_PLAYER2 VL_ASSETS_IMG "player2.png"
-#define VL_ASSET_IMG_BEACH   VL_ASSETS_IMG "beach.png"
-#define VL_ASSET_IMG_NET     VL_ASSETS_IMG "net.png"
-#define VL_ASSET_IMG_TREE    VL_ASSETS_IMG "tree.png"
+namespace vl {
+  Sound::Sound(const char* file): _sound(), _buffer() {
+    _buffer.loadFromFile(file);
+    _sound.setBuffer(_buffer);
+  }
 
-#define VL_ASSETS_SND       "sounds/"
-#define VL_ASSET_SND_LOSE   VL_ASSETS_SND "lose.wav"
-#define VL_ASSET_SND_BOUNCE VL_ASSETS_SND "bounce.wav"
-
-#endif
+  void Sound::play() {
+    if (_sound.getStatus() != sf::Sound::Status::Playing)
+      _sound.play();
+  }
+};

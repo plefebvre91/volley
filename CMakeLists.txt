@@ -14,6 +14,7 @@ set(SRC_FILES src/main.cpp
   src/ball.cpp
   src/character.cpp
   src/score.cpp
+  src/sound.cpp
 )
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)

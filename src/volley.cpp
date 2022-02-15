@@ -28,7 +28,6 @@ SOFTWARE. */
 #include <thread>
 #include <iostream>
 
-
 namespace vl {
 
   static void _render(vl::Volley* app) {
@@ -48,14 +47,14 @@ namespace vl {
     _window->setFramerateLimit(VL_FPS);
 
     // Create players sprite
-    _players[0] = new vl::Character(VL_ASSET_PLAYER1, sf::Vector2f(VL_WINDOW_WIDTH/4, 660), VL_PLAYER_FRICTION);
+    _players[0] = new vl::Character(VL_ASSET_IMG_PLAYER1, sf::Vector2f(VL_WINDOW_WIDTH/4, 660), VL_PLAYER_FRICTION);
     _players[0]->setPlayableArea(sf::FloatRect(VL_MARGIN, VL_MARGIN, VL_WINDOW_WIDTH/2 - 4*VL_MARGIN, VL_WINDOW_HEIGHT - VL_MARGIN));
 
-    _players[1] = new vl::Character(VL_ASSET_PLAYER2, sf::Vector2f(3*VL_WINDOW_WIDTH/4, 600), VL_PLAYER_FRICTION);
+    _players[1] = new vl::Character(VL_ASSET_IMG_PLAYER2, sf::Vector2f(3*VL_WINDOW_WIDTH/4, 600), VL_PLAYER_FRICTION);
     _players[1]->setPlayableArea(sf::FloatRect(VL_WINDOW_WIDTH/2 + 4*VL_MARGIN, VL_MARGIN, VL_WINDOW_WIDTH/2 - 4*VL_MARGIN, VL_WINDOW_HEIGHT - VL_MARGIN));
 
     // Create ball sprite
-    _ball = new vl::Ball(VL_ASSET_BALL, sf::Vector2f(5*VL_WINDOW_WIDTH/8, 200), VL_BALL_FRICTION);
+    _ball = new vl::Ball(VL_ASSET_IMG_BALL, sf::Vector2f(5*VL_WINDOW_WIDTH/8, 200), VL_BALL_FRICTION);
     _ball->setPlayableArea(sf::FloatRect(VL_MARGIN, VL_MARGIN, VL_WINDOW_WIDTH - VL_MARGIN, VL_WINDOW_HEIGHT - VL_MARGIN));
     _ball->setObserver(this);
 
@@ -74,12 +73,18 @@ namespace vl {
     }
 
     // Create other NP objects
-    _sceneObjects[0] = new Entity(VL_ASSET_BEACH, sf::Vector2f(0.0f, 0.0f));
-    _sceneObjects[1] = new Entity(VL_ASSET_TREE, sf::Vector2f(80.0f, 250.0f));
-    _sceneObjects[2] = new Entity(VL_ASSET_NET, sf::Vector2f(450.0f, 415.0f));
+    _sceneObjects[0] = new vl::Entity(VL_ASSET_IMG_BEACH, sf::Vector2f(0.0f, 0.0f));
+    _sceneObjects[1] = new vl::Entity(VL_ASSET_IMG_TREE, sf::Vector2f(80.0f, 250.0f));
+    _sceneObjects[2] = new vl::Entity(VL_ASSET_IMG_NET, sf::Vector2f(450.0f, 415.0f));
+
+    _sounds[0] = new vl::Sound(VL_ASSET_SND_LOSE);
+    _sounds[1] = new vl::Sound(VL_ASSET_SND_BOUNCE);
   }
 
   Volley::~Volley() {
+    for (auto element: _sounds)
+      delete element;
+
     for (auto element: _sceneObjects)
       delete element;
 
@@ -89,8 +94,8 @@ namespace vl {
     delete _score;
     delete _ball;
 
-    for (auto player: _players)
-      delete player;
+    for (auto element: _players)
+      delete element;
 
     delete _window;
   }
@@ -133,11 +138,13 @@ namespace vl {
     if (_ball->isCollidingWith(*_players[0])) {
       _ball->bounce(*_players[0]);
       _lastPlayer = 0u;
+      _sounds[1]->play();
     }
 
     if (_ball->isCollidingWith(*_players[1])) {
       _ball->bounce(*_players[1]);
       _lastPlayer = 1u;
+      _sounds[1]->play();
     }
 
     const sf::Vector2f p = _sceneObjects[2]->getPosition();
@@ -148,6 +155,7 @@ namespace vl {
     if (net_box.contains(_ball->getPosition())) {
       _scores[1-_lastPlayer]++;
       _score->update(_scores[0], _scores[1]);
+      _sounds[0]->play();
       reset();
 
     }
@@ -251,6 +259,7 @@ namespace vl {
       else
         _scores[0]++;
       _score->update(_scores[0], _scores[1]);
+      _sounds[0]->play();
       reset();
      break;
    }

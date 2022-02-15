@@ -49,9 +49,12 @@ SOFTWARE. */
 #define VL_DIST_BEFORE_COLLISION ((VL_SUM_DIST_BEFORE_COLLISION)*(VL_SUM_DIST_BEFORE_COLLISION))
 
 // Game
-#define VL_NB_PLAYERS    2
-#define VL_FLOOR       700
-#define VL_SHADOW_WIDTH 60
+#define VL_NB_PLAYERS     2
+#define VL_NB_SHADOWS     3
+#define VL_NB_NP_ENTITIES 3
+#define VL_NB_SOUNDS      2
+#define VL_FLOOR          700
+#define VL_SHADOW_WIDTH   60
 
 // Movements
 #define VL_JUMP_STEP  8.0f
