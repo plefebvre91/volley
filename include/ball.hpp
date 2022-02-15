@@ -45,10 +45,9 @@ namespace vl {
 
     /**
      * Notify an event to the observer
-     * @param an object
      * @param an event
      */
-    void notify(const Entity& entity, Event event);
+    void notify(Event event);
 
     /**
      * ISolidObject interface implementation

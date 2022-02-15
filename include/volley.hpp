@@ -64,7 +64,7 @@ namespace vl {
     /**
      * Event notification handler
      */
-    void onNotify(const Entity& entity, vl::Event event);
+    void onNotify(const vl::Event& event);
 
 
   private:
@@ -72,11 +72,11 @@ namespace vl {
     void resolveCollisions();
     void resolveGravity(double dt);
     void reset();
-    std::array<vl::Character*, VL_NB_PLAYERS> players;
-    std::array<sf::CircleShape*, 3> shadows;
+    std::array<vl::Character*, VL_NB_PLAYERS> _players;
+    std::array<sf::CircleShape*, 3> _shadows;
     std::array<vl::Entity*, 3> _sceneObjects;
-    vl::Ball* ball;
-    sf::RenderWindow* window;
+    vl::Ball* _ball;
+    sf::RenderWindow* _window;
     unsigned int _lastPlayer;
     unsigned int _scores[2];
     Score* _score;

@@ -46,8 +46,8 @@ namespace vl {
     _observer = observer;
   }
 
-  void Ball::notify(const Entity& entity, Event event) {
-    _observer->onNotify(entity, event);
+  void Ball::notify(Event event) {
+    _observer->onNotify(event);
   }
 
   void Ball::handleEvent(vl::Event e) {
@@ -96,9 +96,7 @@ namespace vl {
 
     auto size = getSize();
     if(_position.y >  VL_FLOOR - (size.y/2.0f) - 5.0f) {
-      notify(*this, vl::Event::BALL_FELL);
+      notify(vl::Event::BALL_FELL);
     }
-
-
   }
 }

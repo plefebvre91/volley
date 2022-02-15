@@ -35,7 +35,7 @@ namespace vl {
      * @param target object
      * @param event type
      */
-    virtual void onNotify(const Entity& entity, Event event) = 0;
+    virtual void onNotify(const Event& event) = 0;
   };
 }
 
