@@ -20,7 +20,8 @@ sudo apt-get install cmake libsfml-dev
 
 1. Clone this repository
 2. Compile with `mkdir build && cd build && cmake ..`
-4. Run with `./bin/game`
+3. Go to binary folder `cd ./bin`
+4. Run with `./volley`
 
 ## Game Design
 
