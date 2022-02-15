@@ -244,24 +244,17 @@ namespace vl {
     }
   }
 
-
- void Volley::onNotify(const vl::Event& event) {
-   switch (event) {
-     case vl::Event::BALL_FELL:
-      auto& p = _ball->getPosition();
-
-      if (p.x < VL_WINDOW_WIDTH/2 && _lastPlayer == 0u)
+  void Volley::onNotify(const vl::Event& event) {
+    if (event == vl::Event::BALL_FELL) {
+      if (_ball->getPosition().x < VL_WINDOW_WIDTH/2)
         _scores[1]++;
-      else if (p.x < VL_WINDOW_WIDTH/2 && _lastPlayer == 1u)
-        _scores[1]++;
-      else if (p.x > VL_WINDOW_WIDTH/2 && _lastPlayer == 0u)
-        _scores[0]++;
       else
         _scores[0]++;
+
       _score->update(_scores[0], _scores[1]);
       _sounds[0]->play();
+
       reset();
-     break;
    }
  }
 
