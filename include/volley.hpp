@@ -24,6 +24,7 @@ SOFTWARE. */
 #ifndef VOLLEY_HPP
 #define VOLLEY_HPP
 
+#include <array>
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 #include "constants.hpp"
